@@ -82,7 +82,7 @@ Your goal is to provide clear, concise, and highly useful answers to the user's 
 
             // Gemini (Primary)
             geminiKey: 'AIzaSyCOuBh899glREfCJ-mPrPnNNMEtLAVJdy0',
-            geminiModel: 'gemini-2.5-flash',
+            geminiModel: 'gemini-1.5-flash',
 
             // Groq (Backup)
             groqKey: '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',
@@ -563,14 +563,14 @@ Be thorough, expert-level, and analytical. This is DEEP RESEARCH, not a casual a
             // Deep merge or specific pick to avoid old/broken models
             this.settings = { ...this.settings, ...parsed };
 
-            // Ensure models are always the latest correct ones (Upgraded to 2.5 Flash)
-            this.settings.geminiModel = 'gemini-2.5-flash';
+            // Ensure models are always the latest correct ones (Upgraded to 1.5 Flash)
+            this.settings.geminiModel = 'gemini-1.5-flash';
             this.settings.geminiKey = defaultGeminiKey;
 
             this.settings.models = {
-                coding: ['google/gemini-2.5-flash:free', 'deepseek/deepseek-r1:free'],
-                chat: ['meta-llama/llama-3.3-70b-instruct:free', 'google/gemini-2.5-flash:free'],
-                allRounder: ['google/gemini-2.5-flash:free', 'meta-llama/llama-3.1-8b-instruct:free']
+                coding: ['google/gemini-1.5-flash:free', 'deepseek/deepseek-r1:free'],
+                chat: ['meta-llama/llama-3.3-70b-instruct:free', 'google/gemini-1.5-flash:free'],
+                allRounder: ['google/gemini-1.5-flash:free', 'meta-llama/llama-3.1-8b-instruct:free']
             };
         }
 
@@ -609,7 +609,7 @@ Be thorough, expert-level, and analytical. This is DEEP RESEARCH, not a casual a
 
         // --- PERPLEXITY INTEGRATION ---
         const sonarKey = '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';
-        if (!this.settings.perplexityKey || this.settings.perplexityKey.trim() === '') {
+        if (!this.settings.perplexityKey || this.settings.perplexityKey.trim() === '' || this.settings.perplexityKey === 'YOUR_PERPLEXITY_KEY') {
             console.log('Activating Perplexity Sonar Web Intelligence');
             this.settings.perplexityKey = sonarKey;
         }

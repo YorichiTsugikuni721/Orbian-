@@ -665,7 +665,7 @@
                     <textarea id="promptInput"
                         placeholder="e.g. Create a 5-slide presentation about Artificial Intelligence — cover intro, uses, benefits, challenges, and future scope."></textarea>
                     <div class="prompt-footer">
-                        <span class="model-tag">gemini-2.5-flash</span>
+                        <span class="model-tag">gemini-1.5-flash</span>
                         <button class="generate-btn" id="generateBtn" onclick="generatePresentation()">
                             <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2.5">
@@ -803,7 +803,7 @@
 
             const btn = document.getElementById('generateBtn');
             btn.classList.add('loading'); btn.disabled = true;
-            setStatus('Generating with Gemini 2.5 Flash...');
+            setStatus('Generating with Gemini 1.5 Flash...');
 
             const systemPrompt = `You are an expert presentation designer. Given a topic, generate a structured presentation.
 IMPORTANT: You MUST respond ONLY with valid JSON. No markdown, no explanation, no code blocks — pure JSON only.
@@ -818,7 +818,7 @@ Use EXACTLY this JSON structure:
 Generate exactly ${slides} content slides. Each slide must have 3-5 concise bullet points. Make content informative and professional.`;
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
