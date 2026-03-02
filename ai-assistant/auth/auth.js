@@ -4,7 +4,7 @@
 
 // Dynamic URL — works on localhost AND local network (phone/tablet)
 const FLASK_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'https://orbian.onrender.com'
+    ? 'http://localhost:5001'
     : 'https://orbian.onrender.com';
 
 const GOOGLE_CLIENT_ID = '553791966216-urnq8pi1hc2au0iol2t2dgqiauo2sl8u.apps.googleusercontent.com';
@@ -259,10 +259,12 @@ window.onload = async function () {
     // Optimized Google Init with Invisible Overlay
     function initGoogle() {
         if (typeof google !== 'undefined') {
+            console.log("Initializing Google Auth with Client ID:", GOOGLE_CLIENT_ID);
             google.accounts.id.initialize({
                 client_id: GOOGLE_CLIENT_ID,
                 callback: window.handleCredentialResponse,
-                ux_mode: 'popup'
+                ux_mode: 'popup',
+                itp_support: true
             });
 
             // Helper to overlay official button on our custom one
@@ -307,6 +309,7 @@ window.onload = async function () {
 };
 
 window.handleCredentialResponse = async function (response) {
+    console.log("Google Credential Received:", response);
     showToast('Google identity verified! Syncing...', 'success');
 
     try {
