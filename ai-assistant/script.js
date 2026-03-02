@@ -97,7 +97,7 @@ You represent the pinnacle of digital intelligence—combining the speed of ligh
             },
 
             // Gemini (Primary)
-            geminiKey: 'AIzaSyCOuBh899glREfCJ-mPrPnNNMEtLAVJdy0',
+            geminiKey: 'AIzaSyBGwTo8KGPj-54CP9bgVVeCtpDE_rpEgSg',
             geminiModel: 'gemini-2.0-flash',
 
             // Groq (Backup)
@@ -585,19 +585,23 @@ Be thorough, expert-level, and analytical. This is DEEP RESEARCH, not a casual a
 
     loadSettings() {
         // Hardcoded Default Key (User provided)
-        const defaultGeminiKey = 'AIzaSyCOuBh899glREfCJ-mPrPnNNMEtLAVJdy0';
+        const defaultGeminiKey = 'AIzaSyBGwTo8KGPj-54CP9bgVVeCtpDE_rpEgSg';
 
-        // Load from storage
         const saved = localStorage.getItem('aiAssistantSettings');
         if (saved) {
             const parsed = JSON.parse(saved);
-            // Deep merge or specific pick to avoid old/broken models
             this.settings = { ...this.settings, ...parsed };
+        }
 
-            // Ensure models are always the latest correct ones (Upgraded to 2.0 Flash)
-            this.settings.geminiModel = 'gemini-2.0-flash';
-            this.settings.geminiKey = defaultGeminiKey;
+        // --- Improved Key Protection ---
+        // Only use hardcoded key as fallback if user has NOT provided their own
+        if (!this.settings.geminiKey || this.settings.geminiKey === defaultGeminiKey) {
+             // This key is currently blacklisted/leaked. User MUST provide their own in Settings now.
+             console.warn('⚠️ Gemini Key is either missing or flagged as leaked.');
+        }
 
+        // Ensure models are registered correctly
+        if (!this.settings.models) {
             this.settings.models = {
                 coding: ['google/gemini-2.0-flash:free', 'deepseek/deepseek-r1:free'],
                 chat: ['meta-llama/llama-3.3-70b-instruct:free', 'google/gemini-2.0-flash:free'],
