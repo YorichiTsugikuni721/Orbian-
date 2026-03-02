@@ -2,7 +2,7 @@
 // ORBIAN AI — Service Worker (PWA)
 // =============================================
 
-const CACHE_NAME = 'orbian-ai-v3';
+const CACHE_NAME = 'orbian-ai-v4';
 
 // Files to cache for offline use
 const STATIC_ASSETS = [
@@ -11,14 +11,16 @@ const STATIC_ASSETS = [
     '/orbian-live',
     '/ppt-studio',
     '/developer',
+    '/pricing',
+    '/about',
+    '/privacy',
     '/auth/login',
     '/auth/account',
     '/styles.css',
     '/script.js',
     '/charts.js',
     '/logo.png',
-    '/manifest.json',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap'
+    '/manifest.json'
 ];
 
 // ── INSTALL: Cache core assets ──
