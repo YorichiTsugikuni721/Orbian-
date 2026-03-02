@@ -1911,7 +1911,7 @@ ${scoutIntelligence}
         this.messages.push(messageData);
 
         const messageEl = document.createElement('div');
-        messageEl.className = 'message assistant';
+        messageEl.className = 'message assistant typing-in-progress';
         messageEl.dataset.id = messageData.id;
 
         // Check if content has a stepper (Complex HTML)
@@ -1922,7 +1922,7 @@ ${scoutIntelligence}
             <div class="message-avatar">AI</div>
             <div class="message-content">
                 <div class="${isStepper ? 'message-stepper-wrapper' : 'message-bubble'}">
-                    <span class="typing-text">${isStepper ? '' : ''}</span>
+                    <span class="typing-text" style="will-change: contents;">${isStepper ? '' : ''}</span>
                 </div>
                 <div class="message-actions">
                     <button class="action-btn tts-btn" title="Read Aloud">Read</button>
@@ -1989,30 +1989,49 @@ ${scoutIntelligence}
             });
 
         } else {
-            // --- Standard Typing Effect ---
+            // --- High-Performance Optimized Typing Loop ---
             let i = 0;
-            const speed = 12; // Adjusted speed
-            const step = 4;   // Larger character chunks for stability
+            const contentLen = content.length;
+            
+            // Dynamic Step Strategy: 
+            // - Short messages: Slow incremental reveal (4-6 chars)
+            // - Long messages: Fast block reveal (20-40 chars)
+            const baseStep = Math.max(6, Math.floor(contentLen / 50)); 
+            let lastUpdate = 0;
             let lastScroll = 0;
 
             return new Promise(resolve => {
-                const typeInterval = setInterval(() => {
-                    if (i < content.length) {
-                        typingText.innerHTML = this.formatContent(content.substring(0, i + step));
-                        i += step;
+                const typeTick = () => {
+                    if (this.isProcessing === false && i < contentLen * 0.5) {
+                        // Edge case where processing stopped early
+                    }
+
+                    const now = performance.now();
+                    
+                    if (i < contentLen) {
+                        // Throttled frame frequency: Increase to 50ms for extremely long messages
+                        // This prevents heavy Regex parsing from pegging the thread.
+                        const frameInterval = contentLen > 1500 ? 55 : 35;
                         
-                        // Throttle scroll to 45ms for visual stability
-                        const now = Date.now();
-                        if (now - lastScroll > 45) {
-                            this.scrollToBottom();
-                            lastScroll = now;
+                        if (now - lastUpdate > frameInterval) {
+                            typingText.innerHTML = this.formatContent(content.substring(0, i + baseStep));
+                            i += baseStep;
+                            lastUpdate = now;
+
+                            // Throttled scroll check: Less frequent to avoid layout thrashing
+                            if (now - lastScroll > 120) {
+                                this.scrollToBottom();
+                                lastScroll = now;
+                            }
                         }
+                        requestAnimationFrame(typeTick);
                     } else {
-                        clearInterval(typeInterval);
+                        // Done: Final render & clean up
+                        messageEl.classList.remove('typing-in-progress');
                         typingText.innerHTML = this.formatContent(content);
                         if (typeof Prism !== 'undefined') Prism.highlightAll();
                         this.saveChatHistory();
-                        this.scrollToBottom(); // Final sync
+                        this.scrollToBottom();
 
                         if (this.isVoiceMode) {
                             this.speakTextVoiceMode(content).then(() => resolve());
@@ -2024,7 +2043,8 @@ ${scoutIntelligence}
                             resolve();
                         }
                     }
-                }, speed);
+                };
+                requestAnimationFrame(typeTick);
             });
         }
     }
