@@ -4,8 +4,8 @@
 
 // Dynamic URL — works on localhost AND local network (phone/tablet)
 const FLASK_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:5001'
-    : `http://${window.location.hostname}:5001`;
+    ? 'https://orbian.onrender.com'
+    : 'https://orbian.onrender.com';
 
 const GOOGLE_CLIENT_ID = '553791966216-urnq8pi1hc2au0iol2t2dgqiauo2sl8u.apps.googleusercontent.com';
 

@@ -1,5 +1,9 @@
 // AI Assistant - Main JavaScript
 
+const FLASK_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'https://orbian.onrender.com'
+    : 'https://orbian.onrender.com';
+
 class AIAssistant {
     constructor() {
         this.messages = [];
@@ -425,7 +429,7 @@ Use these classes when generating Tailwind-based UI:
         if (!user) return;
 
         try {
-            const resp = await fetch(`http://localhost:5001/api/user/${user.id}/memory`);
+            const resp = await fetch(`${FLASK_URL}/api/user/${user.id}/memory`);
             const data = await resp.json();
             if (data.success) {
                 this.neuralMemory = data.memory;
@@ -452,7 +456,7 @@ Use these classes when generating Tailwind-based UI:
         if (!user) return;
 
         try {
-            await fetch(`http://localhost:5001/api/user/${user.id}/memory`, {
+            await fetch(`${FLASK_URL}/api/user/${user.id}/memory`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ key, value, importance })

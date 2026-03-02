@@ -623,7 +623,7 @@
             // Logout
             document.getElementById('logoutBtn').addEventListener('click', async () => {
                 try {
-                    await fetch('http://localhost:5001/api/logout', { method: 'POST' });
+                    await fetch('https://orbian.onrender.com/api/logout', { method: 'POST' });
                 } catch (e) { }
                 localStorage.removeItem('ai_assistant_user');
                 window.location.href = 'auth/login';

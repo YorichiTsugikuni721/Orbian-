@@ -2,7 +2,9 @@
 // ORBIAN AI — SECRET GATE LOGIC
 // ============================================
 
-const FLASK_URL = 'http://localhost:5001';
+const FLASK_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'https://orbian.onrender.com'
+    : 'https://orbian.onrender.com';
 
 // TOAST
 function showToast(message) {
