@@ -1262,7 +1262,8 @@ ${moodInstruction}
             trivia: /\b(quiz|trivia|fact|fun fact|jeopardy|history|capital|who is|what is the highest|fastest)\b/i,
             translation: /\b(translate|language|spanish|french|hindi|german|japanese|chinese|meaning in|how do you say)\b/i,
             academia: /\b(research|citation|academic|paper|thesis|study|bibliography|mla|apa|harvard style|journal|scholarly)\b/i,
-            technology: /\b(tech|ai|robot|gadget|software|hardware|mobile|phone|laptop|innovation|future|cyber|cloud)\b/i
+            technology: /\b(tech|ai|robot|gadget|software|hardware|mobile|phone|laptop|innovation|future|cyber|cloud)\b/i,
+            search: /\b(news|latest|current|today|stock|weather|release|upcoming|price of|update on|what's happening)\b/i
         };
 
         // Find Match
@@ -1292,48 +1293,55 @@ ${moodInstruction}
             throw new Error(`Vision models unavailable or failed.\nDetails:\n${errors.join('\n')}`);
         }
 
-        // --- 3. MODEL SELECTION STRATEGY (Strategic Priority) ---
+        // --- 3. THE SQUAD ORCHESTRATOR (Strategy: Scout + Strategist) ---
 
-        // Specialized Logic: Priority 1 is Gemini for Coding & Knowledge
-        const isSpecialized = ['coding', 'technology', 'science', 'academia'].includes(detectedCategory);
+        // Priority 0: Scout Agent (Perplexity) for Live Reconnaissance
+        let scoutIntelligence = null;
+        const needsRecon = detectedCategory === 'search' ||
+            /\b(latest|current|news|today|price|release|worth|who won)\b/i.test(userMessage);
 
-        if (isSpecialized && this.settings.geminiKey) {
+        if (needsRecon && this.settings.perplexityKey) {
             try {
-                this.updateTypingStep(`Consulting Gemini (${detectedCategory.toUpperCase()} Mode)`);
-                return await this.callGemini(userMessage, null, activePersona);
+                this.updateTypingStep("Scout Agent: Gathering Intelligence from Live Web");
+                scoutIntelligence = await this.callPerplexity(userMessage);
+                console.log("📡 Intelligence Gathered:", scoutIntelligence.substring(0, 100) + "...");
             } catch (e) {
-                console.error('Priority Gemini failed:', e);
-                errors.push(`Priority Gemini: ${e.message}`);
+                console.error('Scout Agent (Perplexity) failed:', e);
+                errors.push(`Scout Agent: ${e.message}`);
             }
         }
 
-        // Priority: Perplexity (Sonar Web Intelligence)
-        if (this.settings.perplexityKey) {
+        // Priority 1: Strategist Agent (Gemini) — Synthesis & Logic
+        if (this.settings.geminiKey) {
             try {
-                this.updateTypingStep("Searching Live Web with Sonar");
-                return await this.callPerplexity(userMessage);
+                let strategyMessage = userMessage;
+                if (scoutIntelligence) {
+                    this.updateTypingStep("Strategist: Synthesizing Intelligence Report");
+                    strategyMessage = `[LIVE INTELLIGENCE REPORT FROM SCOUT AGENT]:
+${scoutIntelligence}
+
+[MISSION]: You are Orbian Strategist. Use the above intelligence and your own knowledge to provide a comprehensive, expert answer to the User Query.
+[User Query]: "${userMessage}"`;
+                } else if (isSpecialized) {
+                    this.updateTypingStep(`Strategist: Activating ${detectedCategory.toUpperCase()} Mode`);
+                } else {
+                    this.updateTypingStep("Strategist: Formulating Response");
+                }
+
+                return await this.callGemini(strategyMessage, null, activePersona);
             } catch (e) {
-                console.error('Perplexity failed:', e);
-                errors.push(`Perplexity: ${e.message}`);
+                console.error('Strategist Gemini failed:', e);
+                errors.push(`Strategist Gemini: ${e.message}`);
             }
         }
 
-        // Priority (Fallback for Specialized or Primary for General): Gemini
-        if (this.settings.geminiKey && !errors.some(err => err.includes('Priority Gemini'))) {
-            try {
-                this.updateTypingStep("Consulting Gemini");
-                return await this.callGemini(userMessage, null, activePersona);
-            } catch (e) {
-                console.error('Gemini API failed:', e);
-                errors.push(`Gemini: ${e.message}`);
-            }
-        }
+        // Priority: Perplexity (Direct Fallback if Gemini failed but PPLX worked)
+        if (scoutIntelligence) return scoutIntelligence;
 
         // Priority: Groq (Fast Llama Engine)
         if (this.settings.groqKey) {
             try {
-                console.log('🪵 Trying Groq (Llama-3)...');
-                this.updateTypingStep("Switching to Fast Llama Engine");
+                this.updateTypingStep("Fast Engine: Generating Quick Response");
                 return await this.callGroq(userMessage, activePersona);
             } catch (e) {
                 console.error('❌ Groq Error:', e);
@@ -1341,7 +1349,7 @@ ${moodInstruction}
             }
         }
 
-        // Priority 4: OpenRouter (Final Fallback - Restricted to 3 Models)
+        // Priority 4: OpenRouter (Final Fallback - Restricted 3 Models)
         if (this.settings.customKey) {
             try {
                 const fallbackModels = [
@@ -1350,15 +1358,11 @@ ${moodInstruction}
                     'meta-llama/llama-3.3-70b-instruct:free'
                 ];
 
-                let targetModel = fallbackModels[0]; // Default to Gemini 2.0 via OpenRouter
-                if (detectedCategory === 'coding') {
-                    targetModel = fallbackModels[1]; // DeepSeek R1 for coding fallback
-                } else if (detectedCategory === 'roleplay') {
-                    targetModel = fallbackModels[2]; // Llama for chat/roleplay
-                }
+                let targetModel = fallbackModels[0];
+                if (detectedCategory === 'coding') targetModel = fallbackModels[1];
+                else if (detectedCategory === 'roleplay') targetModel = fallbackModels[2];
 
-                console.log(`🚀 Using Final Fallback Model (OpenRouter): ${targetModel}`);
-                this.updateTypingStep(`Connecting to ${targetModel.split('/')[1] || 'AI Model'}`);
+                this.updateTypingStep(`Fallback: Connecting to ${targetModel.split('/')[1]}`);
                 return await this.callCustom(userMessage, targetModel, activePersona);
             } catch (e) {
                 console.error('❌ OpenRouter Error:', e);
