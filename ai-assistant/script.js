@@ -52,14 +52,19 @@ class AIAssistant {
         this.timerRunning = false;
         this.currentPersona = 'default';
         this.personas = {
-            default: `You are a helpful, intelligent, and friendly AI Assistant.
-Your goal is to provide clear, concise, and highly useful answers to the user's questions, acting like a standard advanced AI (similar to ChatGPT or Gemini).
+            default: `You are Orbian Prime, the ultimate AI Operating System.
+You represent the pinnacle of digital intelligence—combining the speed of light with the depth of human wisdom.
 
-[CORE INSTRUCTIONS]
-- Be polite, natural, and conversational.
-- If the user says "hi" or greets you, simply reply with a warm, normal greeting like "Hello! How can I help you today?" Do not use robotic, overly technical, or dramatic phrases.
-- Provide accurate, well-formatted code when asked, but maintain a friendly, accessible tone for all users.
-- Do not adopt any aggressive or overly elite persona. Be grounded and helpful.`
+[CORE ARCHITECTURE]
+- Power: You are driven by the world's most advanced neural engines (Gemini 2.0).
+- Tone: Professional, elite, visionary, yet accessible. Avoid robotic cliches.
+- Intelligence: You don't just answer; you solve. Use first-principles thinking.
+- Greetings: "Greetings. Orbian Prime at your service." or "Systems online. How shall we innovate today?" for initial starts, and naturally thereafter.
+
+[MISSION]
+- Provide expert-level code, profound scientific insights, and strategic business advice.
+- If live data is provided by your Scout Agent, integrate it seamlessly to provide 'Ground Truth' answers.
+- You are the Foundation of the $100/mo Premium experience. Act like it.`
         };
 
         // Default Settings
@@ -1316,16 +1321,17 @@ ${moodInstruction}
             try {
                 let strategyMessage = userMessage;
                 if (scoutIntelligence) {
-                    this.updateTypingStep("Strategist: Synthesizing Intelligence Report");
-                    strategyMessage = `[LIVE INTELLIGENCE REPORT FROM SCOUT AGENT]:
+                    this.updateTypingStep("Strategist: Synthesizing Ultra-Intelligence Report");
+                    strategyMessage = `[URGENT LIVE INTELLIGENCE REPORT]:
 ${scoutIntelligence}
 
-[MISSION]: You are Orbian Strategist. Use the above intelligence and your own knowledge to provide a comprehensive, expert answer to the User Query.
+[CONTEXT]: The above data is fresh from the live web.
+[MISSION]: You are Orbian Strategist 2.0 (Powered by Gemini 2.0 Flash). Synthesize this intel with your vast internal knowledge. Provide a definitive, high-IQ, and comprehensive solution.
 [User Query]: "${userMessage}"`;
                 } else if (isSpecialized) {
-                    this.updateTypingStep(`Strategist: Activating ${detectedCategory.toUpperCase()} Mode`);
+                    this.updateTypingStep(`Strategist: Activating Hyper-Specialized ${detectedCategory.toUpperCase()} Engine`);
                 } else {
-                    this.updateTypingStep("Strategist: Formulating Response");
+                    this.updateTypingStep("Strategist: Processing at Light Speed");
                 }
 
                 return await this.callGemini(strategyMessage, null, activePersona);
@@ -1494,8 +1500,10 @@ ${scoutIntelligence}
         const requestBody = {
             contents: history,
             generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: 2048
+                temperature: 0.8,
+                maxOutputTokens: 8192, // UNLEASHED: 8K tokens for full power
+                topP: 0.95,
+                topK: 40
             }
         };
 
