@@ -943,7 +943,9 @@ body.sidebar-collapsed .sidebar>* {
 
 .message.user {
     flex-direction: row-reverse;
-    justify-content: flex-start;
+    justify-content: flex-end; /* Align right by default */
+    margin-left: auto;
+    width: 100%;
 }
 
 
@@ -1490,133 +1492,47 @@ body.chat-active .input-container {
 
 /* Responsive Design */
 /* Responsive Design Refined */
-/* Laptop & Desktop Adjustments (1024px - 1440px) */
-@media (max-width: 1440px) {
-    .sidebar {
-        width: 260px;
-    }
+/* ==========================================================================
+   ELITE ADAPTIVE UI SYSTEM
+   ========================================================================== */
 
-    .messages {
-        max-width: 1000px;
-        width: 96%;
-    }
-
-    .input-container {
-        max-width: 1000px;
-        width: 96%;
-    }
-
-    .chat-header {
-        padding: 16px 24px;
-    }
-
-    .suggestions {
-        max-width: 900px;
+/* --- 💻 UltraWide & Large Desktop (> 1600px) --- */
+@media (min-width: 1601px) {
+    .messages, .input-container {
+        max-width: 1100px;
+        width: 100%;
     }
 }
 
-/* Small Laptops (1280px and below) */
-@media (max-width: 1280px) and (min-width: 769px) {
-    /* html { font-size: 15px; } - Removed to keep fonts standard size/visible */
-
-    .sidebar {
-        width: 240px;
-    }
-
-    .welcome-screen h2 {
-        font-size: 2.2rem;
-    }
-
-    .chat-container {
-        padding: 0 16px 20px;
-    }
-
-    .input-area {
-        padding: 16px 24px 24px;
-    }
-
-    .message-content {
-        max-width: calc(100% - 40px);
-    }
-
-    .message-bubble {
-        padding: 10px 14px;
-        font-size: 0.92rem;
+/* --- 💻 Standard Desktop/Laptops (1201px - 1600px) --- */
+@media (max-width: 1600px) {
+    .messages, .input-container {
+        max-width: 960px;
+        width: 94%;
     }
 }
 
-/* Vertical Height Optimization for Laptops */
-@media (max-height: 800px) {
-    .chat-header {
-        padding: 12px 20px;
-        min-height: 60px;
-    }
-
-    .sidebar-header {
-        padding: 16px 20px;
-    }
-
-    .input-area {
-        padding: 12px 20px 16px;
-    }
-
-    .welcome-screen {
-        padding: 20px 0;
-    }
-
-    .welcome-icon {
-        width: 72px;
-        height: 72px;
-        margin-bottom: 24px;
-    }
-
-    .welcome-screen h2 {
-        font-size: 2rem;
-        margin-bottom: 12px;
-    }
-
-    .welcome-screen p {
-        margin-bottom: 32px;
-    }
+/* --- 🖥️ Small Laptops & iPad Pro 12.9" (1025px - 1200px) --- */
+@media (max-width: 1200px) and (min-width: 1025px) {
+    .sidebar { width: 250px; }
+    .messages, .input-container { max-width: 850px; }
+    .chat-header { padding: 6px 20px; }
 }
 
+/* --- 📟 Tablets & iPads (769px - 1024px) --- */
 @media (max-width: 1024px) {
-    .chat-container {
-        padding: 20px;
-    }
-
-    .messages,
-    .input-container {
-        max-width: 100%;
-    }
-
-    .suggestions {
-        gap: 12px;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        width: 100vw;
-        height: 100dvh;
-    }
-
     .sidebar {
         position: fixed;
         left: 0;
         top: 0;
         bottom: 0;
-        width: 85% !important;
-        /* Larger for better tap targets on mobile */
-        max-width: 320px;
+        width: 280px !important;
         z-index: 1000;
         transform: translateX(-100%);
         transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border-right: 1px solid rgba(255, 255, 255, 0.1);
-        margin-left: 0 !important;
         background: #090a0f !important;
-        /* Darker elite mobile sidebar */
+        margin-left: 0 !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     body.sidebar-open .sidebar {
@@ -1628,135 +1544,89 @@ body.chat-active .input-container {
         content: '';
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(8px);
-        z-index: 900;
-        animation: fadeIn 0.4s ease-out;
+        background: rgba(0,0,0,0.65);
+        backdrop-filter: blur(10px);
+        z-index: 999;
     }
 
     .chat-main {
         margin-left: 0 !important;
         padding-left: 0 !important;
         width: 100%;
-        height: 100dvh;
-        display: flex;
-        flex-direction: column;
     }
 
+    #sidebarToggle { display: flex !important; }
+
+    .messages, .input-container { max-width: 92%; }
+    
+    .welcome-screen h2 { font-size: 2.5rem; }
+}
+
+/* --- 📱 Mobile Elite (Up to 768px) --- */
+@media (max-width: 768px) {
     .chat-header {
-        padding: 4px 12px; /* Even thinner on mobile */
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(25px);
-        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
-        height: auto;
-        min-height: 40px; /* Super thin as per red line */
-        flex-shrink: 0;
+        padding: 4px 12px;
+        min-height: 44px;
+        background: rgba(255, 255, 255, 0.98);
     }
 
-    .chat-header h1 {
-        font-size: 1rem;
-        font-weight: 700;
-    }
-
-    .welcome-screen {
-        padding: 40px 24px;
-        justify-content: flex-start;
-        overflow-y: auto;
-    }
-
-    .welcome-icon {
-        width: 70px;
-        height: 70px;
-        margin-bottom: 24px;
-    }
-
-    .welcome-screen h2 {
-        font-size: 1.6rem;
-        font-weight: 800;
-        line-height: 1.1;
-    }
-
-    .welcome-screen p {
-        font-size: 0.9rem;
-        margin-bottom: 40px;
-        opacity: 0.7;
-    }
-
-    .suggestions {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        width: 100%;
-    }
-
-    .suggestion-btn {
-        padding: 16px 20px;
-        font-size: 0.85rem;
-        border-radius: 12px;
-        background: #fff;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    }
-
-    .chat-container {
-        padding: 10px 8px; /* High-density view for mobile users to stick content to the side */
-        padding-top: 10px;
-    }
-
-    .messages {
-        width: 100%;
-        padding-bottom: 30px;
-        gap: 12px;
-        margin: 0 !important;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .message {
-        width: 100%; /* Ensure container spans full width */
-        max-width: 100%; 
-        margin-bottom: 8px;
-        display: flex;
-    }
-
-    .message.assistant {
-        justify-content: flex-start;
-    }
-
+    /* Message Alignment Fixes */
     .message.user {
         justify-content: flex-end !important;
         flex-direction: row-reverse;
+        margin-left: auto !important;
         width: 100%;
-        margin-left: auto !important; /* Force it to the right */
         align-self: flex-end;
     }
 
     .message-content {
-        max-width: 85%; /* Don't take full 100% to keep conversation feel */
-        font-size: 0.88rem;
-        padding: 12px 14px;
+        max-width: 86%;
+        font-size: 0.92rem;
+        padding: 10px 14px;
         border-radius: 18px;
-        line-height: 1.4;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
-    /* Centered Input on Start */
+    .chat-container {
+        padding: 10px 12px;
+    }
+
+    .welcome-screen {
+        padding: 60px 24px;
+        text-align: center;
+    }
+
+    .welcome-screen h2 {
+        font-size: 1.85rem;
+        line-height: 1.2;
+    }
+
+    .suggestions {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        width: 100%;
+    }
+
+    /* Input States: Start Centered vs Active Bottom */
     body:not(.chat-active) .chat-main {
         justify-content: center;
     }
 
     body:not(.chat-active) .input-area {
-        padding-bottom: 30vh;
+        padding-bottom: 22vh;
         background: transparent;
         border: none;
     }
 
     body:not(.chat-active) .input-container {
-        max-width: 92% !important;
+        max-width: 95% !important;
         margin: 0 auto !important;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        box-shadow: 0 12px 45px rgba(0,0,0,0.25);
     }
 
+    /* Active Chat State */
     body.chat-active .input-area {
-        padding: 4px 12px 8px; /* High-density view */
+        padding: 8px 12px calc(env(safe-area-inset-bottom, 8px) + 4px);
         background: var(--bg-primary);
         border-top: 1px solid var(--border-color);
     }
@@ -1764,70 +1634,65 @@ body.chat-active .input-container {
     .input-container {
         width: 100% !important;
         max-width: 100% !important;
-        margin: 0 !important;
         padding: 12px 14px;
-        gap: 12px;
+        gap: 10px;
         border-radius: 20px;
         background: var(--bg-secondary);
-        border: 1px solid var(--border-color);
-        box-shadow: none;
-        display: flex;
-        flex-direction: column;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body.chat-active .input-container {
-        padding: 4px 10px; /* SHRUNK HEIGHT after interaction */
-        gap: 4px; /* Tight gaps */
+        padding: 6px 12px;
         border-radius: 24px;
-    }
-
-    body.chat-active .input-footer {
-        padding-top: 4px;
-        margin-top: 2px;
-    }
-
-    body.chat-active #messageInput {
-        min-height: 32px;
-        padding-top: 10px; /* Moves 'What do you want to know?' down */
-    }
-
-    .input-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-top: 10px;
-        border-top: 1px solid rgba(255,255,255,0.05);
+        gap: 4px;
+        background: #fff;
+        border-color: rgba(124, 58, 237, 0.2);
     }
 
     #messageInput {
-        font-size: 0.95rem;
+        font-size: 0.98rem;
         min-height: 24px;
-        padding: 18px 0 10px; /* Increased top padding to 18px to move text down */
-        line-height: 1.4;
+        padding: 14px 0 6px;
+        line-height: 1.5;
     }
 
-    .send-btn,
-    .icon-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
+    body.chat-active #messageInput {
+        min-height: 34px;
+        padding-top: 8px;
     }
 
-    /* model-badge removed */
+    .input-footer {
+        padding-top: 8px;
+        border-top: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .icon-btn, .send-btn {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* --- 🤳 Ultra-Compact (Small Phones < 400px) --- */
+@media (max-width: 400px) {
+    .chat-header { padding: 4px 8px; }
+
+    .message-content {
+        max-width: 92%;
+        font-size: 0.88rem;
+    }
+
+    .welcome-screen h2 { font-size: 1.6rem; }
+
+    body.chat-active .input-container {
+        padding: 4px 8px;
+    }
 
     .disclaimer {
-        font-size: 0.6rem;
-        margin-top: 8px;
+        font-size: 0.65rem;
+        margin: 8px 12px 0;
         text-align: center;
-    }
-
-    #sidebarToggle {
-        display: flex;
-        background: transparent;
-        border: none;
-        padding: 8px;
-        margin-left: -8px;
+        opacity: 0.5;
+        line-height: 1.3;
     }
 }
 
