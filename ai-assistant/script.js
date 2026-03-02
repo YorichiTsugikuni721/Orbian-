@@ -597,7 +597,8 @@ Be thorough, expert-level, and analytical. This is DEEP RESEARCH, not a casual a
         // Only use hardcoded key as fallback if user has NOT provided their own
         if (!this.settings.geminiKey || this.settings.geminiKey === defaultGeminiKey) {
              // This key is currently blacklisted/leaked. User MUST provide their own in Settings now.
-             console.warn('⚠️ Gemini Key is either missing or flagged as leaked.');
+             console.warn('⚠️ Gemini Key is either missing or flagged as leaked. Please update it in Settings.');
+             this.settings.geminiKey = defaultGeminiKey; // Still set as fallback but expect failure
         }
 
         // Ensure models are registered correctly
@@ -1333,9 +1334,11 @@ ${moodInstruction}
         };
 
         // Find Match
+        let isSpecialized = false;
         for (const [cat, regex] of Object.entries(categories)) {
             if (regex.test(lowerMsg)) {
                 detectedCategory = cat;
+                isSpecialized = true;
                 if (this.personas[cat]) {
                     activePersona = this.personas[cat];
                 }
@@ -1440,16 +1443,44 @@ ${scoutIntelligence}
         throw new Error(`All Providers failed.\nDetails:\n${errors.join('\n')}`);
     }
 
+    // Helper to get proxy URL for localhost development
+    getProxyUrl(originalUrl, providerName, apiKey = null) {
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            let proxyPath = `/api/proxy/${providerName}`;
+            
+            // Handle Gemini specific path routing
+            if (providerName === 'gemini' && originalUrl.includes('v1beta/models/')) {
+                const geminiApiPathMatch = originalUrl.match(/v1beta\/models\/[^?]+/);
+                if (geminiApiPathMatch) {
+                    proxyPath = `/api/proxy/gemini/${geminiApiPathMatch[0]}`;
+                }
+            }
 
+            // Extract query parameters from original URL
+            const queryIndex = originalUrl.indexOf('?');
+            const queryString = queryIndex !== -1 ? originalUrl.substring(queryIndex) : '';
 
+            // If we have an apiKey and it's NOT in the queryString yet, add it
+            if (apiKey && !queryString.includes(`key=${apiKey}`)) {
+                const separator = queryString ? '&' : '?';
+                return `${proxyPath}${queryString}${separator}key=${apiKey}`;
+            }
 
+            return `${proxyPath}${queryString}`;
+        }
+        return originalUrl;
+    }
 
     // Provider 3: Perplexity (Sonar / Web Search)
     async callPerplexity(query) {
         if (!this.settings.perplexityKey) throw new Error('Perplexity Key missing');
 
         this.updateTypingStep("Searching Live Web with Sonar"); // Visual Update
-        const url = 'https://api.perplexity.ai/chat/completions';
+        let url = 'https://api.perplexity.ai/chat/completions';
+
+        // Proxy check
+        url = this.getProxyUrl(url, 'perplexity');
+
         const body = {
             model: this.settings.perplexityModel || "sonar",
             messages: [
@@ -1533,7 +1564,10 @@ ${scoutIntelligence}
         const apiKey = this.settings.geminiKey;
         const model = this.settings.geminiModel || 'gemini-1.5-flash';
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        let url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+        // Proxy check for CORS
+        url = this.getProxyUrl(url, 'gemini', apiKey);
 
         // Format history for Gemini
         const history = this.messages.map(msg => ({
@@ -1589,6 +1623,10 @@ ${scoutIntelligence}
         if (!response.ok) {
             const err = await response.json();
             console.error('❌ Gemini API Error Response:', err);
+            const msg = err.error?.message || '';
+            if (msg.toLowerCase().includes('leaked')) {
+                throw new Error('Your Gemini API key has been flagged as leaked by Google. Please generate a new key at aistudio.google.com and update it in Orbian Settings.');
+            }
             throw new Error(err.error?.message || 'Gemini API Error');
         }
 
@@ -1648,13 +1686,19 @@ ${scoutIntelligence}
         const activeSystemPrompt = systemPromptOverride || this.settings.systemPrompt || 'You are a helpful assistant.';
 
         this.updateTypingStep("Thinking"); // Final Step before response
+        
+        let finalUrl = url;
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            if (url.includes('groq.com')) finalUrl = '/api/proxy/groq';
+            else if (url.includes('openrouter.ai')) finalUrl = '/api/proxy/openrouter';
+        }
 
         const messages = [
             { role: 'system', content: activeSystemPrompt },
             ...history
         ];
 
-        const response = await fetch(url, {
+        const response = await fetch(finalUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

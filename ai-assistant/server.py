@@ -264,6 +264,33 @@ class CORSProxyRequestHandler(http.server.SimpleHTTPRequestHandler):
             target_url = f"https://api.sketchfab.com/v3/search?{query_string}"
             self.handle_proxy_request(target_url)
             return
+
+        # Handle Proxy for Perplexity
+        if self.path.startswith('/api/proxy/perplexity'):
+            target_url = "https://api.perplexity.ai/chat/completions"
+            self.handle_proxy_post(target_url)
+            return
+
+        # Handle Proxy for Gemini
+        if self.path.startswith('/api/proxy/gemini'):
+            # Extracts the full target URL from the query or just appends the query
+            parsed = urllib.parse.urlparse(self.path)
+            query = parsed.query
+            target_url = f"https://generativelanguage.googleapis.com/{parsed.path.replace('/api/proxy/gemini/', '')}?{query}"
+            self.handle_proxy_post(target_url)
+            return
+
+        # Handle Proxy for Groq
+        if self.path.startswith('/api/proxy/groq'):
+            target_url = "https://api.groq.com/openai/v1/chat/completions"
+            self.handle_proxy_post(target_url)
+            return
+
+        # Handle Proxy for OpenRouter
+        if self.path.startswith('/api/proxy/openrouter'):
+            target_url = "https://openrouter.ai/api/v1/chat/completions"
+            self.handle_proxy_post(target_url)
+            return
         
         # Handle Favicon specifically
         if self.path == '/favicon.ico':
@@ -408,6 +435,40 @@ class CORSProxyRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(e.read())
         except Exception as e:
+            self.send_error(500, f"Internal Proxy Error: {str(e)}")
+
+    def handle_proxy_post(self, target_url):
+        try:
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length)
+            
+            req = urllib.request.Request(target_url, data=body, method='POST')
+            
+            # Forward relevant headers
+            for header in ['Authorization', 'Content-Type', 'x-goog-api-client', 'x-goog-api-key']:
+                if header in self.headers:
+                    req.add_header(header, self.headers[header])
+            
+            # Add user agent
+            req.add_header('User-Agent', 'Mozilla/5.0')
+
+            with urllib.request.urlopen(req) as response:
+                self.send_response(response.status)
+                # Forward response headers (simplified)
+                self.send_header('Content-Type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                self.wfile.write(response.read())
+
+        except urllib.error.HTTPError as e:
+            self.send_response(e.code)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(e.read())
+        except Exception as e:
+            import traceback
+            print(traceback.format_exc())
             self.send_error(500, f"Internal Proxy Error: {str(e)}")
 
 def serve():
