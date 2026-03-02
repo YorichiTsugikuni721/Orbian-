@@ -268,32 +268,29 @@ window.onload = async function () {
                 itp_support: true
             });
 
-            // Helper to overlay official button on our custom one
+            // Helper to render official Google Identity Button 
             const setupOverlay = (id) => {
                 const container = document.getElementById(id);
                 if (container) {
-                    console.log(`Setting up Google Overlay for: ${id}`);
+                    console.log(`Rendering Official Google Button for: ${id}`);
+                    const parentWidth = container.parentElement?.offsetWidth || 350;
+                    
                     google.accounts.id.renderButton(container, {
                         type: 'standard',
                         shape: 'pill',
-                        theme: 'filled_blue',
+                        theme: 'outline', // 'outline' gives white background with border
                         size: 'large',
-                        width: container.offsetWidth || 350
+                        width: parentWidth,
+                        text: 'continue_with',
+                        logo_alignment: 'left'
                     });
 
+                    // We no longer hide it, we want the official look
                     const observer = new MutationObserver(() => {
                         const iframe = container.querySelector('iframe');
                         if (iframe) {
-                            console.log(`Iframe detected for ${id}, making invisible...`);
-                            iframe.style.setProperty('position', 'absolute', 'important');
-                            iframe.style.setProperty('top', '0', 'important');
-                            iframe.style.setProperty('left', '0', 'important');
                             iframe.style.setProperty('width', '100%', 'important');
-                            iframe.style.setProperty('height', '100%', 'important');
-                            iframe.style.setProperty('min-width', '100%', 'important');
-                            iframe.style.setProperty('opacity', '0', 'important');
-                            iframe.style.setProperty('cursor', 'pointer', 'important');
-                            iframe.style.setProperty('z-index', '20', 'important');
+                            iframe.style.setProperty('opacity', '1', 'important');
                             observer.disconnect();
                         }
                     });
