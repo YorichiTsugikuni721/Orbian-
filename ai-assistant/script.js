@@ -54,6 +54,7 @@ class AIAssistant {
             weather: null,
             news: []
         };
+        this.permissionsGranted = false;
 
         // --- Feature Initializations ---
         this.attachedFile = null;
@@ -347,8 +348,20 @@ Use these classes when generating Tailwind-based UI:
         const voiceModeNavBtn = document.getElementById('voiceModeNavBtn');
         const closeVoiceBtn = document.getElementById('closeVoiceBtn');
 
-        if (voiceModeBtn) voiceModeBtn.addEventListener('click', () => { window.location.href = '/orbian-live'; });
-        if (voiceModeNavBtn) voiceModeNavBtn.addEventListener('click', () => { window.location.href = '/orbian-live'; });
+        if (voiceModeBtn) {
+            voiceModeBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const granted = await this.ensureMediaPermissions();
+                if (granted) window.location.href = '/orbian-live';
+            });
+        }
+        if (voiceModeNavBtn) {
+            voiceModeNavBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const granted = await this.ensureMediaPermissions();
+                if (granted) window.location.href = '/orbian-live';
+            });
+        }
         if (closeVoiceBtn) closeVoiceBtn.addEventListener('click', () => this.exitVoiceMode());
 
         // Orbian Live Controls
@@ -3847,23 +3860,48 @@ ${scoutIntelligence}
     }
 
     // --- 🎤 MIC HANDLING ---
-    toggleMic() {
+    async toggleMic() {
         if (!this.recognition) {
             this.showToast('Speech Recognition not supported in this browser.');
             return;
         }
 
+        // --- NEW: Block until permissions for BOTH Mic and Camera are requested (First time only) ---
+        if (!this.permissionsGranted) {
+            const granted = await this.ensureMediaPermissions();
+            if (!granted) return;
+        }
+
         if (this.isRecording) {
             this.recognition.stop();
-            // isRecording flag updated in onend
         } else {
             try {
                 this.recognition.start();
-                // isRecording flag updated in onstart
             } catch (e) {
                 console.error('Mic error:', e);
                 this.showToast('Could not start microphone. Check permissions.');
             }
+        }
+    }
+
+    async ensureMediaPermissions() {
+        if (this.permissionsGranted) return true;
+        this.showToast("🔓 Requesting Camera & Microphone Access...");
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+            // Immediately stop tracks to release hardware
+            stream.getTracks().forEach(track => track.stop());
+            this.permissionsGranted = true;
+            console.log("✅ All hardware permissions granted.");
+            return true;
+        } catch (e) {
+            console.error("❌ Hardware Permission Denied:", e);
+            if (e.name === 'NotAllowedError') {
+                this.showToast("🚫 Permission Denied. Please enable Mic/Cam in browser settings.");
+            } else {
+                this.showToast("⚠️ Media error: " + e.message);
+            }
+            return false;
         }
     }
 

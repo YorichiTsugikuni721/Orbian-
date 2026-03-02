@@ -573,6 +573,21 @@
         let silenceTimer = null, lastTranscript = "", currentVoiceName = "", camFacing = "user";
         const smoothedFrequencies = new Array(256).fill(0);
         const fakeData = Array.from({ length: 64 }, () => 0);
+        let hardPermsGranted = false;
+
+        async function ensurePermissions() {
+            if (hardPermsGranted) return true;
+            try {
+                // Pre-fetch both to ensure smooth transition later
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+                stream.getTracks().forEach(t => t.stop());
+                hardPermsGranted = true;
+                return true;
+            } catch (e) {
+                console.error("Permissions failed", e);
+                return false;
+            }
+        }
 
         // --- Orbian Vision: Spotlight Logic (Updated for Square Crop) ---
         let visionActive = false;
@@ -822,6 +837,16 @@
 
         async function startL() {
             if (appState === 'thinking' || appState === 'speaking') { speechSynthesis.cancel(); setState('idle'); }
+            
+            // Ensure permissions before starting (First time fallback)
+            const allowed = await ensurePermissions();
+            if (!allowed) { 
+                lastTranscript = "⚠️ Camera/Mic permission required.";
+                document.getElementById('tr').textContent = lastTranscript;
+                document.getElementById('tr').classList.add('on');
+                return; 
+            }
+
             isHold = true; await setupMic(); if (!recognition) initSpeech();
             speechSynthesis.cancel(); setState('listening');
             try { recognition?.start(); } catch (_) { }
