@@ -645,6 +645,24 @@
                             <span class="slider-premium"></span>
                         </label>
                     </div>
+
+                    <!-- Troubleshooting for Mobile/Redmi -->
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <div style="background: var(--primary-color); padding: 5px; border-radius: 6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            </div>
+                            <span style="font-size: 0.85rem; font-weight: 700; color: white;">Permission Help (Mobile/Redmi)</span>
+                        </div>
+                        <ul style="font-size: 0.75rem; color: rgba(255,255,255,0.7); padding-left: 15px; margin-bottom: 15px; line-height: 1.5;">
+                            <li>Use <strong>Chrome Browser</strong> (MIUI/Mi Browser may block Mic).</li>
+                            <li>Ensure URL starts with <strong>https://</strong> (Security requirement).</li>
+                            <li>Click the <strong>"Lock" icon</strong> next to the URL and manually set Mic to <strong>"Allow"</strong>.</li>
+                        </ul>
+                        <button onclick="assistant.troubleshootPermissions()" style="width: 100%; padding: 10px; background: white; color: black; border: none; border-radius: 8px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.2s;">
+                            Run Permission Diagnostic
+                        </button>
+                    </div>
                 </div>
 
                 <div class="setting-group">

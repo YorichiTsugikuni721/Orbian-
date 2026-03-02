@@ -4146,6 +4146,42 @@ ${scoutIntelligence}
         return false;
     }
 
+    async troubleshootPermissions() {
+        this.showToast("🔍 Running Diagnostic...");
+        await this.delay(1000);
+
+        // 1. Check Protocol
+        if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            alert("🚨 Security Alert: You are using HTTP. Browsers block Microphone/Camera on all mobile devices unless you use HTTPS. Please move to a secure URL (e.g. Netlify/Vercel/Cloudflare).");
+            return;
+        }
+
+        // 2. Check Device Support
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert("🚫 Incompatible Browser: Your current browser (likely Mi Browser) does not support modern hardware access. Please install and use GOOGLE CHROME instead.");
+            return;
+        }
+
+        // 3. Reset Internal State
+        this.permissionsGranted = false;
+        this.showToast("🔄 State Reset. Requesting again...");
+        
+        // 4. Test UserMedia (Force prompt)
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream.getTracks().forEach(t => t.stop());
+            this.permissionsGranted = true;
+            this.showToast("✅ SUCCESS: Permission Granted!");
+            alert("✨ It's Working! Microphone permission is now active. You can use the Voice Assistant now.");
+        } catch (e) {
+            console.error("DIAGNOSTIC FAILED:", e);
+            if (e.name === 'NotAllowedError') {
+                alert("⚠️ Locked: Browser settings are blocking the mic. \n\nFIX: Click the 'Lock' icon left of the URL -> Site Settings -> Reset Permissions, then refresh page.");
+            } else {
+                alert("⚠️ Error: " + e.message + "\n\nPlease ensure No other app is using the mic right now.");
+            }
+        }
+    }
     getIconSvg(name) {
         const icons = {
             'code': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>',
