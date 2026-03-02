@@ -348,20 +348,20 @@ window.oauthLogin = async function (provider) {
             return;
         }
 
-        if (window.googlePrompting) {
-            console.log("Google prompt already outstanding, ignoring click.");
-            return;
-        }
+        // Clear any previous/outstanding requests to avoid "Only one navigator.credentials.get" error
+        google.accounts.id.cancel();
 
-        window.googlePrompting = true;
-        console.log("Forcing Google Prompt...");
+        console.log("Forcing Google Prompt (Repeatable Mode)...");
 
         google.accounts.id.prompt((notification) => {
+            console.log("Prompt Status:", notification.getMomentaryType(), notification.getNotDisplayedReason());
             if (notification.isNotDisplayed() || notification.isSkippedMomentarily() || notification.isDismissedMomentarily()) {
-                console.warn("Prompt issue:", notification.getNotDisplayedReason() || "Skipped/Dismissed");
                 window.googlePrompting = false;
             }
         });
+
+        // Safety timeout to reset the lock after 10 seconds if no callback received
+        setTimeout(() => { window.googlePrompting = false; }, 10000);
         return;
     }
 
