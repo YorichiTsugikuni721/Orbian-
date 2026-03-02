@@ -729,9 +729,12 @@ Be thorough, expert-level, and analytical. This is DEEP RESEARCH, not a casual a
     // --- Core UI Methods ---
 
     autoResizeTextarea() {
-        this.messageInput.style.height = 'auto';
+        if (!this.messageInput) return;
+        const oldHeight = this.messageInput.style.height;
+        this.messageInput.style.height = '1px'; // Min height briefly
         const newHeight = Math.min(this.messageInput.scrollHeight, 200);
         this.messageInput.style.height = newHeight + 'px';
+        
         if (this.ghostInput) {
             this.ghostInput.style.height = newHeight + 'px';
         }
@@ -1988,20 +1991,28 @@ ${scoutIntelligence}
         } else {
             // --- Standard Typing Effect ---
             let i = 0;
-            const speed = 5;
-            const step = 2;
+            const speed = 12; // Adjusted speed
+            const step = 4;   // Larger character chunks for stability
+            let lastScroll = 0;
 
             return new Promise(resolve => {
                 const typeInterval = setInterval(() => {
                     if (i < content.length) {
                         typingText.innerHTML = this.formatContent(content.substring(0, i + step));
                         i += step;
-                        this.scrollToBottom();
+                        
+                        // Throttle scroll to 45ms for visual stability
+                        const now = Date.now();
+                        if (now - lastScroll > 45) {
+                            this.scrollToBottom();
+                            lastScroll = now;
+                        }
                     } else {
                         clearInterval(typeInterval);
                         typingText.innerHTML = this.formatContent(content);
                         if (typeof Prism !== 'undefined') Prism.highlightAll();
                         this.saveChatHistory();
+                        this.scrollToBottom(); // Final sync
 
                         if (this.isVoiceMode) {
                             this.speakTextVoiceMode(content).then(() => resolve());
@@ -2839,7 +2850,16 @@ ${scoutIntelligence}
     }
 
     delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
-    scrollToBottom() { this.chatContainer.scrollTop = this.chatContainer.scrollHeight; }
+    scrollToBottom() {
+        if (!this.chatContainer) return;
+        
+        // Smart Scroll: Only scroll if user is already near the bottom (within 200px)
+        const isNearBottom = this.chatContainer.scrollHeight - this.chatContainer.clientHeight - this.chatContainer.scrollTop < 250;
+        
+        if (isNearBottom) {
+            this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+        }
+    }
     copyToClipboard(text) { navigator.clipboard.writeText(text).then(() => this.showToast('Copied!')); }
 
     copyCode(btn) {
@@ -3276,11 +3296,13 @@ ${scoutIntelligence}
         const typeChar = () => {
             if (i < text.length) {
                 this.messageInput.value += text.charAt(i);
-                this.autoResizeTextarea();
-                // Auto-scroll to bottom
+                
+                // Throttle layout changes
+                if (i % 4 === 0) this.autoResizeTextarea();
+                
+                // Ensure input scrolls to follow text
                 this.messageInput.scrollTop = this.messageInput.scrollHeight;
                 i++;
-                // Use requestAnimationFrame for smoother animation
                 setTimeout(() => requestAnimationFrame(typeChar), speed);
             } else {
                 // Remove burn effect shortly after typing stops

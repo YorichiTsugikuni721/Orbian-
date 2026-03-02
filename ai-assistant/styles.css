@@ -736,9 +736,10 @@ body.sidebar-collapsed .sidebar>* {
     padding: 24px 32px;
     display: flex;
     flex-direction: column;
-    scroll-behavior: smooth;
+    scroll-behavior: auto; /* Changed from smooth to prevent jitter during streaming */
+    overflow-anchor: auto; /* Helps the browser maintain scroll position as content is added */
     position: relative;
-    /* Ensure content scrolls, pushing input to bottom if needed, but flex handles this */
+    contain: layout; /* Stabilizes the container's layout to prevent global shifts */
 }
 
 .chat-header h1 {
