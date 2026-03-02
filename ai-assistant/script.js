@@ -1294,7 +1294,20 @@ ${moodInstruction}
 
         // --- 3. MODEL SELECTION STRATEGY (Strategic Priority) ---
 
-        // Priority 1: Perplexity (Sonar Web Intelligence)
+        // Specialized Logic: Priority 1 is Gemini for Coding & Knowledge
+        const isSpecialized = ['coding', 'technology', 'science', 'academia'].includes(detectedCategory);
+
+        if (isSpecialized && this.settings.geminiKey) {
+            try {
+                this.updateTypingStep(`Consulting Gemini (${detectedCategory.toUpperCase()} Mode)`);
+                return await this.callGemini(userMessage, null, activePersona);
+            } catch (e) {
+                console.error('Priority Gemini failed:', e);
+                errors.push(`Priority Gemini: ${e.message}`);
+            }
+        }
+
+        // Priority: Perplexity (Sonar Web Intelligence)
         if (this.settings.perplexityKey) {
             try {
                 this.updateTypingStep("Searching Live Web with Sonar");
@@ -1305,8 +1318,8 @@ ${moodInstruction}
             }
         }
 
-        // Priority 2: Gemini (Balanced Vision & Search)
-        if (this.settings.geminiKey) {
+        // Priority (Fallback for Specialized or Primary for General): Gemini
+        if (this.settings.geminiKey && !errors.some(err => err.includes('Priority Gemini'))) {
             try {
                 this.updateTypingStep("Consulting Gemini");
                 return await this.callGemini(userMessage, null, activePersona);
@@ -1316,7 +1329,7 @@ ${moodInstruction}
             }
         }
 
-        // Priority 3: Groq (Fast Llama Engine)
+        // Priority: Groq (Fast Llama Engine)
         if (this.settings.groqKey) {
             try {
                 console.log('🪵 Trying Groq (Llama-3)...');
@@ -1328,19 +1341,23 @@ ${moodInstruction}
             }
         }
 
-        // Priority 4: OpenRouter (Final Fallback)
+        // Priority 4: OpenRouter (Final Fallback - Restricted to 3 Models)
         if (this.settings.customKey) {
             try {
-                let targetModel = this.settings.customModel;
-                if (detectedCategory === 'coding' || detectedCategory === 'technology') {
-                    targetModel = this.settings.models.coding[0];
-                } else if (detectedCategory === 'roleplay' || detectedCategory === 'marketing') {
-                    targetModel = this.settings.models.chat[0];
-                } else {
-                    targetModel = this.settings.models.allRounder[0];
+                const fallbackModels = [
+                    'google/gemini-2.0-flash-001',
+                    'deepseek/deepseek-r1:free',
+                    'meta-llama/llama-3.3-70b-instruct:free'
+                ];
+
+                let targetModel = fallbackModels[0]; // Default to Gemini 2.0 via OpenRouter
+                if (detectedCategory === 'coding') {
+                    targetModel = fallbackModels[1]; // DeepSeek R1 for coding fallback
+                } else if (detectedCategory === 'roleplay') {
+                    targetModel = fallbackModels[2]; // Llama for chat/roleplay
                 }
 
-                console.log(`🚀 Using Fallback Model: ${targetModel}`);
+                console.log(`🚀 Using Final Fallback Model (OpenRouter): ${targetModel}`);
                 this.updateTypingStep(`Connecting to ${targetModel.split('/')[1] || 'AI Model'}`);
                 return await this.callCustom(userMessage, targetModel, activePersona);
             } catch (e) {
