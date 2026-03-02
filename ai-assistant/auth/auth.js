@@ -268,29 +268,34 @@ window.onload = async function () {
                 itp_support: true
             });
 
-            // Helper to render official Google Identity Button 
+            // Helper to overlay official button on our custom one invisible for a static look
             const setupOverlay = (id) => {
                 const container = document.getElementById(id);
                 if (container) {
-                    console.log(`Rendering Official Google Button for: ${id}`);
-                    const parentWidth = container.parentElement?.offsetWidth || 350;
+                    console.log(`Setting up Google Overlay for: ${id}`);
                     
+                    // We render a generic one, but hide it
                     google.accounts.id.renderButton(container, {
                         type: 'standard',
                         shape: 'pill',
-                        theme: 'outline', // 'outline' gives white background with border
+                        theme: 'outline',
                         size: 'large',
-                        width: parentWidth,
-                        text: 'continue_with',
-                        logo_alignment: 'left'
+                        width: container.parentElement?.offsetWidth || 350
                     });
 
-                    // We no longer hide it, we want the official look
                     const observer = new MutationObserver(() => {
                         const iframe = container.querySelector('iframe');
                         if (iframe) {
+                            console.log(`Iframe detected for ${id}, making invisible overlay...`);
+                            iframe.style.setProperty('position', 'absolute', 'important');
+                            iframe.style.setProperty('top', '0', 'important');
+                            iframe.style.setProperty('left', '0', 'important');
                             iframe.style.setProperty('width', '100%', 'important');
-                            iframe.style.setProperty('opacity', '1', 'important');
+                            iframe.style.setProperty('height', '100%', 'important');
+                            iframe.style.setProperty('min-width', '100%', 'important');
+                            iframe.style.setProperty('opacity', '0', 'important'); // Completely invisible
+                            iframe.style.setProperty('cursor', 'pointer', 'important');
+                            iframe.style.setProperty('z-index', '20', 'important');
                             observer.disconnect();
                         }
                     });
