@@ -354,7 +354,7 @@ window.oauthLogin = async function (provider) {
         console.log("Forcing Google Prompt (Repeatable Mode)...");
 
         google.accounts.id.prompt((notification) => {
-            console.log("Prompt Status:", notification.getMomentaryType(), notification.getNotDisplayedReason());
+            console.log("Prompt Status:", notification.getNotDisplayedReason());
             if (notification.isNotDisplayed() || notification.isSkippedMomentarily() || notification.isDismissedMomentarily()) {
                 window.googlePrompting = false;
             }
