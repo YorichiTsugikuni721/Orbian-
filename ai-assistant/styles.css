@@ -942,9 +942,10 @@ body.sidebar-collapsed .sidebar>* {
 }
 
 .message.user {
-    flex-direction: row;
-    justify-content: flex-start;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
     width: 100%;
+    margin-left: auto;
 }
 
 
@@ -1571,10 +1572,11 @@ body.chat-active .input-container {
 
     /* Message Alignment Fixes */
     .message.user {
-        justify-content: flex-start !important;
-        flex-direction: row;
-        margin-left: 0 !important;
+        justify-content: flex-end !important;
+        flex-direction: row-reverse;
+        margin-left: auto !important;
         width: 100%;
+        align-self: flex-end;
     }
     
     .message.assistant {
