@@ -45,6 +45,16 @@ class AIAssistant {
         this.neuralMemory = []; // Distilled knowledge about user
         this.memoryInjected = false;
 
+        // --- Geolocation & Local Intelligence ---
+        this.locationData = {
+            lat: null,
+            lon: null,
+            city: 'Unknown',
+            state: 'Unknown',
+            weather: null,
+            news: []
+        };
+
         // --- Feature Initializations ---
         this.attachedFile = null;
         this.timerInterval = null;
@@ -207,6 +217,7 @@ Use these classes when generating Tailwind-based UI:
             this.initFileHandling(); // Initialize File handling
             this.initWellnessMonitor(); // Eye Care & Health Monitor
             this.loadNeuralMemory(); // 🧠 Neural Memory: Link cross-session intelligence
+            this.initGeolocation(); // 📍 Geolocation: Local intelligence & awareness
 
             window.speechSynthesis.onvoiceschanged = () => this.loadVoices();
             this.loadVoices();
@@ -4007,6 +4018,109 @@ ${scoutIntelligence}
             'coffee': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>'
         };
         return icons[name] || icons['code'];
+    }
+    // --- Geolocation & Local Intelligence (Weather/News/Bihar/Buxar) ---
+    async initGeolocation() {
+        if (!navigator.geolocation) {
+            console.warn("📍 Geolocation not supported.");
+            return;
+        }
+
+        console.log("📍 Requesting position...");
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                this.locationData.lat = pos.coords.latitude;
+                this.locationData.lon = pos.coords.longitude;
+                console.log(`📍 Found Position: ${this.locationData.lat}, ${this.locationData.lon}`);
+                
+                // 1. Reverse Geocode (Get City/State)
+                await this.reverseGeocode();
+                
+                // 2. Fetch Weather
+                await this.fetchLocationWeather();
+                
+                // 3. Fetch Local News
+                await this.fetchLocationNews();
+
+                // 4. Update System Prompt with Location Context
+                this.updateLocationInSystemPrompt();
+                
+                // 5. Update UI Widget
+                this.updateLocationUI();
+            },
+            (err) => {
+                console.warn("📍 Geolocation denied/failed:", err.message);
+                this.showToast("Location access denied. Using default settings.");
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    }
+
+    async reverseGeocode() {
+        try {
+            const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${this.locationData.lat}&longitude=${this.locationData.lon}&localityLanguage=en`);
+            const data = await res.json();
+            this.locationData.city = data.city || data.locality || 'Unknown';
+            this.locationData.state = data.principalSubdivision || 'Unknown';
+            console.log(`📍 Location Decoded: ${this.locationData.city}, ${this.locationData.state}`);
+        } catch (e) { console.error("❌ Reverse Geocode Error:", e); }
+    }
+
+    async fetchLocationWeather() {
+        try {
+            const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${this.locationData.lat}&longitude=${this.locationData.lon}&current_weather=true&temperature_unit=celsius`);
+            const data = await res.json();
+            if (data.current_weather) {
+                this.locationData.weather = data.current_weather;
+                console.log("⭐ Weather Data Updated.");
+            }
+        } catch (e) { console.error("❌ Weather Fetch Error:", e); }
+    }
+
+    async fetchLocationNews() {
+        try {
+            const city = this.locationData.city;
+            const state = this.locationData.state;
+            const isBihar = state.toLowerCase().includes('bihar') || city.toLowerCase().includes('buxar');
+            const query = isBihar ? "Bihar Buxar Latest News" : `${city} ${state} Latest News`;
+            console.log(`🗞️ Preparing news context for: ${query}`);
+            this.locationData.newsQuery = query;
+        } catch (e) { console.error("❌ News Fetch Error:", e); }
+    }
+
+    updateLocationInSystemPrompt() {
+        const { city, state, lat, lon, weather } = this.locationData;
+        const weatherStr = weather ? `${weather.temperature}\u00b0C` : 'Unknown';
+        const locContext = `\n\n[USER CURRENT CONTEXT]\nLocation: ${city}, ${state} (${lat}, ${lon})\nLocal Weather: ${weatherStr}\nImportant: User is based in ${state}. If it's Bihar/Buxar, provide highly specific local info.`;
+        this.settings.systemPrompt += locContext;
+    }
+
+    updateLocationUI() {
+        const sidebarTop = document.querySelector('.logo-area') || document.querySelector('.sidebar .header');
+        if (sidebarTop) {
+            let widget = document.getElementById('locationWidget');
+            if (!widget) {
+                widget = document.createElement('div');
+                widget.id = 'locationWidget';
+                widget.className = 'location-widget';
+                Object.assign(widget.style, {
+                    padding: '12px', margin: '12px', background: 'rgba(255, 255, 255, 0.03)',
+                    borderRadius: '16px', fontSize: '11px', color: 'rgba(255,255,255,0.7)',
+                    border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', gap: '12px',
+                    backdropFilter: 'blur(10px)', animation: 'fadeIn 0.5s ease-out'
+                });
+                sidebarTop.after(widget);
+            }
+            const temp = this.locationData.weather ? `${this.locationData.weather.temperature}\u00b0C` : '--';
+            widget.innerHTML = `
+                <div style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(139, 92, 246, 0.1)); padding: 8px; border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.2);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                </div>
+                <div style="flex: 1;">
+                    <div style="color: #fff; font-weight: 700; font-size: 13px;">${this.locationData.city}</div>
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.5);">${this.locationData.state} \u2022 <span style="color: #a78bfa;">${temp}</span></div>
+                </div>`;
+        }
     }
 }
 
