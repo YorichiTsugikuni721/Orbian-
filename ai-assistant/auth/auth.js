@@ -314,9 +314,11 @@ window.onload = async function () {
 };
 
 window.handleCredentialResponse = async function (response) {
-    console.log("Google Credential Received:", response);
+    console.log("🚀 Google Credential Received:", response);
     window.googlePrompting = false;
     showToast('Google identity verified! Syncing...', 'success');
+
+    console.log("🔗 Syncing with Backend:", `${FLASK_URL}/api/oauth/google`);
 
     try {
         const res = await fetch(`${FLASK_URL}/api/oauth/google`, {
@@ -324,16 +326,22 @@ window.handleCredentialResponse = async function (response) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ credential: response.credential })
         });
+        
+        console.log("📥 Backend Response Status:", res.status);
         const data = await res.json();
+        console.log("📦 Backend Data:", data);
 
         if (data.success) {
             showToast('Google login successful!', 'success');
             localStorage.setItem('ai_assistant_user', JSON.stringify(data.user));
+            console.log("✅ User stored, redirecting...");
             setTimeout(() => window.location.href = '../app', 1000);
         } else {
+            console.error("❌ Sync Failed:", data.message);
             showToast(data.message || 'Google sync failed');
         }
     } catch (e) {
+        console.error("🚨 Fetch Error:", e);
         showToast('Connection to backend failed during Google sync.');
     }
 }
