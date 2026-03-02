@@ -722,12 +722,13 @@ body.sidebar-collapsed .sidebar>* {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 32px; /* Thinned from 20px to 12px */
-    background: rgba(10, 12, 20, 0.8);
-    backdrop-filter: blur(12px);
+    padding: 4px 16px; /* Ultra-thin red line state */
+    background: rgba(10, 12, 20, 0.85);
+    backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
     z-index: 10;
+    min-height: 36px;
 }
 
 .chat-container {
@@ -1048,7 +1049,7 @@ body:not(.chat-active) .chat-main {
 }
 
 body:not(.chat-active) .input-area {
-    padding-bottom: 20vh;
+    padding-bottom: 4vh; /* Even lower as per user black circle annotation */
 }
 
 body.chat-active .input-area {
@@ -1650,12 +1651,12 @@ body.chat-active .input-container {
     }
 
     .chat-header {
-        padding: 8px 16px; /* Thinned significantly for mobile */
+        padding: 4px 12px; /* Even thinner on mobile */
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(25px);
         box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
-        height: auto; /* Allow content to dictate height */
-        min-height: 48px;
+        height: auto;
+        min-height: 40px; /* Super thin as per red line */
         flex-shrink: 0;
     }
 
