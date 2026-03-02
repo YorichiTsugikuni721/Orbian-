@@ -578,13 +578,22 @@
         async function ensurePermissions() {
             if (hardPermsGranted) return true;
             try {
-                // Pre-fetch both to ensure smooth transition later
+                // 🛡️ Chrome only allows this on HTTPS or localhost
+                if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    alert("🔒 Chrome Security: Mic/Cam permission requires HTTPS or http://localhost. Your current connection doesn't allow hardware access.");
+                    return false;
+                }
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
                 stream.getTracks().forEach(t => t.stop());
                 hardPermsGranted = true;
                 return true;
             } catch (e) {
                 console.error("Permissions failed", e);
+                if (e.name === 'NotAllowedError') {
+                    alert("🚫 Permission Denied! Chrome is blocking your microphone and camera. Click the 'Lock' icon next to the URL and set Mic/Cam to 'Allow'.");
+                } else if (e.name === 'NotFoundError') {
+                    alert("⚠️ No Microphone or Camera found on this device.");
+                }
                 return false;
             }
         }

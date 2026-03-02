@@ -3886,9 +3886,23 @@ ${scoutIntelligence}
 
     async ensureMediaPermissions() {
         if (this.permissionsGranted) return true;
+
+        // 🛡️ SECURITY CHECK: Chrome only allows hardware access on HTTPS or Localhost
+        if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            this.showToast("🚫 Secure Context Required: Hardware access requires HTTPS or localhost.");
+            console.error("Hardware access blocked: Not in a secure context (HTTPS/Localhost).");
+            alert("🔒 Chrome Security: Microphone and Camera access require HTTPS or Localhost. If you are testing locally, use http://localhost:PORT instead of your IP address.");
+            return false;
+        }
+
         this.showToast("🔓 Requesting Camera & Microphone Access...");
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+            // Priority: Request BOTH to get it over with
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: true, 
+                video: { width: 320, height: 240 } // Small request just to probe
+            });
+            
             // Immediately stop tracks to release hardware
             stream.getTracks().forEach(track => track.stop());
             this.permissionsGranted = true;
@@ -3896,8 +3910,23 @@ ${scoutIntelligence}
             return true;
         } catch (e) {
             console.error("❌ Hardware Permission Denied:", e);
-            if (e.name === 'NotAllowedError') {
-                this.showToast("🚫 Permission Denied. Please enable Mic/Cam in browser settings.");
+            
+            if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+                this.showToast("🚫 Access Denied: Please click the 'Lock' icon next to URL and enable Mic/Cam.");
+                alert("🔴 Permission Denied: Chrome has blocked hardware access. Please click the lock icon in the address bar and set 'Microphone' and 'Camera' to 'Allow'.");
+            } else if (e.name === 'NotFoundError' || e.name === 'DevicesNotFoundError') {
+                this.showToast("⚠️ Missing Hardware: No Mic or Camera found.");
+                
+                // Fallback: Try just Mic
+                try {
+                    const micOnly = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    micOnly.getTracks().forEach(t => t.stop());
+                    this.permissionsGranted = true;
+                    this.showToast("✅ Mic found (Camera missing or blocked).");
+                    return true;
+                } catch (micErr) {
+                    this.showToast("❌ No audio input found either.");
+                }
             } else {
                 this.showToast("⚠️ Media error: " + e.message);
             }
