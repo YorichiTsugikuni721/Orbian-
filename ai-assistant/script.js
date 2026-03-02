@@ -2541,13 +2541,6 @@ ${scoutIntelligence}
                                 </tr>`).join('')}
                         </tbody>
                     </table>
-                    ${hasNumeric ? `
-                        <div style="padding: 8px; border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end;">
-                            <button class="visualize-btn" onclick="assistant.visualizeTable(this)" style="background: var(--primary-color); color: white; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                                Visualize
-                            </button>
-                        </div>` : ''}
                 </div>`;
 
             tables.push(tableHtml);
