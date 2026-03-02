@@ -270,45 +270,54 @@ window.onload = async function () {
 
             // Helper to overlay official button on our custom one invisible for a static look
             const setupOverlay = (id) => {
-                const container = document.getElementById(id);
-                if (container) {
+                const button = document.getElementById(id); // This is our custom button
+                if (button) {
                     console.log(`Setting up Google Overlay for: ${id}`);
                     
-                    // We render a generic one, but hide it
-                    // Small delay ensures parent width is calculated after render
-                    setTimeout(() => {
-                        const targetWidth = container.offsetWidth || 350;
-                        console.log(`Rendering Google Overlay with width: ${targetWidth}`);
-                        
-                        google.accounts.id.renderButton(container, {
-                            type: 'standard',
-                            shape: 'pill',
-                            theme: 'outline',
-                            size: 'large',
-                            width: targetWidth,
-                            text: 'continue_with',
-                            logo_alignment: 'left'
+                    // Create an overlay div if it doesn't exist
+                    let overlay = button.querySelector('.google-overlay-surface');
+                    if (!overlay) {
+                        overlay = document.createElement('div');
+                        overlay.className = 'google-overlay-surface';
+                        // Absolute positioning ensures it covers exactly the parent button
+                        Object.assign(overlay.style, {
+                            position: 'absolute',
+                            top: '0',
+                            left: '0',
+                            width: '100%',
+                            height: '100%',
+                            opacity: '0.01', // Tiny opacity to ensure it stays clickable but invisible
+                            zIndex: '50',
+                            overflow: 'hidden'
                         });
+                        button.appendChild(overlay);
+                    }
+                    
+                    // Render official button into the overlay
+                    // We use a large width to ensure it covers our button
+                    google.accounts.id.renderButton(overlay, {
+                        type: 'standard',
+                        shape: 'pill',
+                        theme: 'outline',
+                        size: 'large',
+                        width: button.offsetWidth || 350
+                    });
 
-                        const observer = new MutationObserver(() => {
-                            const iframe = container.querySelector('iframe');
-                            if (iframe) {
-                                console.log(`Iframe detected for ${id}, making invisible overlay...`);
-                                iframe.style.setProperty('position', 'absolute', 'important');
-                                iframe.style.setProperty('top', '0', 'important');
-                                iframe.style.setProperty('left', '0', 'important');
-                                iframe.style.setProperty('width', '100%', 'important');
-                                iframe.style.setProperty('height', '100%', 'important');
-                                iframe.style.setProperty('min-width', '100%', 'important');
-                                iframe.style.setProperty('max-width', '100%', 'important');
-                                iframe.style.setProperty('opacity', '0', 'important'); // Completely invisible
-                                iframe.style.setProperty('cursor', 'pointer', 'important');
-                                iframe.style.setProperty('z-index', '20', 'important');
-                                observer.disconnect();
-                            }
-                        });
-                        observer.observe(container, { childList: true });
-                    }, 100);
+                    // Force any generated iframe inside to be 100% width/height
+                    const observer = new MutationObserver(() => {
+                        const iframe = overlay.querySelector('iframe');
+                        if (iframe) {
+                            iframe.style.setProperty('position', 'absolute', 'important');
+                            iframe.style.setProperty('top', '0', 'important');
+                            iframe.style.setProperty('left', '0', 'important');
+                            iframe.style.setProperty('width', '100%', 'important');
+                            iframe.style.setProperty('height', '100%', 'important');
+                            iframe.style.setProperty('min-width', '100%', 'important');
+                            iframe.style.setProperty('opacity', '0', 'important');
+                            observer.disconnect();
+                        }
+                    });
+                    observer.observe(overlay, { childList: true });
                 }
             };
 
