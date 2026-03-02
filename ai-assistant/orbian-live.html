@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Orbian Live</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100dvh;
+            background: #04020a;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: max(env(safe-area-inset-top), 20px) 16px max(env(safe-area-inset-bottom), 28px);
+            color: #fff;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        body::-webkit-scrollbar,
+        .v-menu::-webkit-scrollbar {
+            display: none;
+        }
+
+        .top-info {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding-bottom: 8px;
+            flex-shrink: 0
+        }
+
+        .live-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .72rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, .35);
+            letter-spacing: .5px
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #10b981;
+            opacity: 0;
+            transition: opacity .4s;
+            animation: blink 1.2s infinite
+        }
+
+        .live-dot.on {
+            opacity: 1
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .2
+            }
+        }
+
+        .state-line {
+            font-size: .75rem;
+            color: rgba(255, 255, 255, .25);
+            min-height: 18px;
+            letter-spacing: .3px
+        }
+
+        .blob-wrap {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #04020a;
+            z-index: 1;
+        }
+
+        #cv {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block
+        }
+
+        .transcript {
+            position: absolute;
+            bottom: 140px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, .6);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: .8rem;
+            color: rgba(255, 255, 255, .9);
+            text-align: center;
+            max-width: 80%;
+            opacity: 0;
+            transition: opacity .3s;
+            z-index: 5;
+        }
+
+        .transcript.on {
+            opacity: 1
+        }
+
+        .cam-pip {
+            position: absolute;
+            top: 40px;
+            right: 20px;
+            width: 150px;
+            height: 150px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            z-index: 10;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+            background: #000;
+        }
+
+        .cam-pip.mirror video {
+            transform: scaleX(-1);
+        }
+
+        .flip-btn-overlay {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.2s;
+        }
+
+        .flip-btn-overlay:hover {
+            transform: scale(1.15);
+        }
+
+        .cam-pip.on {
+            display: block
+        }
+
+        .cam-pip video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover
+        }
+
+        /* --- Orbian Vision: Spotlight Overlay --- */
+        #spotlight-wrap {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+            display: none;
+        }
+
+        #spotlight-wrap.on {
+            display: block;
+        }
+
+        #spotlight-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        #vision-status {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(124, 58, 237, 0.2);
+            padding: 6px 16px;
+            border-radius: 100px;
+            border: 1px solid rgba(124, 58, 237, 0.4);
+            font-size: 0.7rem;
+            color: #a78bfa;
+            backdrop-filter: blur(10px);
+            display: none;
+            z-index: 20;
+            letter-spacing: 1px;
+            font-weight: 700;
+            animation: visionPulse 2s infinite;
+        }
+
+        @keyframes visionPulse {
+            0% {
+                opacity: 0.6;
+                transform: translateX(-50%) scale(0.98);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+
+            100% {
+                opacity: 0.6;
+                transform: translateX(-50%) scale(0.98);
+            }
+        }
+
+        .controls {
+            position: absolute;
+            bottom: max(env(safe-area-inset-bottom), 28px);
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            z-index: 10;
+            padding: 0 16px;
+        }
+
+        #capB_wrapper {
+            position: absolute;
+            top: 40px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .voice-dropdown {
+            position: relative;
+            z-index: 100;
+        }
+
+        .v-trigger {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            min-width: 160px;
+            color: white;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .v-trigger:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .v-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            width: 260px;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            display: none;
+            max-height: 320px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: vPop 0.25s cubic-bezier(0.17, 0.84, 0.44, 1);
+        }
+
+        @keyframes vPop {
+            from {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .v-menu.on {
+            display: block;
+        }
+
+        .v-item {
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #1a1a1a;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-bottom: 4px;
+        }
+
+        .v-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .v-item small {
+            font-size: 0.7rem;
+            opacity: 0.5;
+            font-weight: 400;
+        }
+
+        .v-item:hover {
+            background: #f1f5f9;
+        }
+
+        .v-item.active {
+            background: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .ci {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px
+        }
+
+        .btn {
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform .18s cubic-bezier(.34, 1.56, .64, 1);
+            outline: none
+        }
+
+        .btn:active {
+            transform: scale(.88) !important
+        }
+
+        .sm {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, .07);
+            border: 1px solid rgba(255, 255, 255, .09)
+        }
+
+        .sm:hover {
+            background: rgba(255, 255, 255, .12);
+            transform: scale(1.06)
+        }
+
+        .sm.on {
+            background: rgba(0, 220, 200, .12);
+            border-color: rgba(0, 220, 200, .3)
+        }
+
+        .hold {
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 255, 255, .09);
+            border: 1.5px solid rgba(255, 255, 255, .1);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .5)
+        }
+
+        .hold.on {
+            background: rgba(0, 220, 180, .12);
+            border-color: rgba(0, 220, 180, .4);
+            animation: gpulse 1.2s ease-out infinite
+        }
+
+        @keyframes gpulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 220, 180, .5)
+            }
+
+            70% {
+                box-shadow: 0 0 0 14px rgba(0, 220, 180, 0)
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 220, 180, 0)
+            }
+        }
+
+        .sm.on-screen {
+            background: rgba(0, 150, 255, 0.25);
+            border-color: rgba(0, 150, 255, 0.4);
+        }
+
+        .end {
+            width: 56px;
+            height: 56px;
+            background: #dc2626;
+            box-shadow: 0 4px 18px rgba(220, 38, 38, .4)
+        }
+
+        .cl {
+            font-size: .63rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, .28);
+            letter-spacing: .3px
+        }
+
+        /* --- MOBILE RESPONSIVENESS (NEW) --- */
+        @media screen and (max-width: 600px) {
+            .controls {
+                gap: 12px;
+                padding-bottom: 34px;
+            }
+
+            .sm {
+                width: 44px;
+                height: 44px;
+            }
+
+            .hold,
+            .end {
+                width: 52px;
+                height: 52px;
+            }
+
+            .cam-pip {
+                width: 120px;
+                height: 160px;
+                top: auto;
+                bottom: 120px;
+                right: 16px;
+                border-radius: 12px;
+            }
+
+            .transcript {
+                bottom: 240px;
+                font-size: 0.75rem;
+                padding: 10px 16px;
+                width: 85%;
+            }
+
+            .v-trigger {
+                min-width: 130px;
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+
+            #capB_wrapper {
+                top: 20px;
+                left: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="capB_wrapper">
+        <button class="btn sm" id="capB" onclick="toggleCaptions()" title="Toggle Captions"
+            style="width: 42px; height: 42px;">
+            <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2"
+                stroke-linecap="round">
+                <path d="M4 6h12M4 10h12M4 14h8" />
+            </svg>
+        </button>
+        <div class="voice-dropdown">
+            <div class="v-trigger" onclick="toggleVD(event)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                </svg>
+                <span id="vSelected">Auto Voice</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round" style="margin-left: auto; opacity: 0.5;">
+                    <path d="m6 9 6 6 6-6" />
+                </svg>
+            </div>
+            <div class="v-menu" id="vMenu"></div>
+        </div>
+    </div>
+
+    <div class="blob-wrap">
+        <canvas id="cv"></canvas>
+        <div id="vision-status">ORBIAN VISION: TRACKING ACTIVE</div>
+        <div id="spotlight-wrap">
+            <canvas id="spotlight-canvas"></canvas>
+        </div>
+        <div class="transcript" id="tr"></div>
+        <div class="cam-pip" id="pip">
+            <video id="camV" autoplay muted playsinline></video>
+            <div class="flip-btn-overlay" id="pipFlip" onclick="flipCam()" title="Flip Camera">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 2.1l4 4-4 4" />
+                    <path d="M3 12.2v-2a4 4 0 0 1 4-4h12.8M7 21.9l-4-4 4-4" />
+                    <path d="M21 11.8v2a4 4 0 0 1-4 4H4.2" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="ci"><button class="btn sm" id="screenB" onclick="toggleScreen()"><svg width="19" height="19"
+                    fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.7" stroke-linecap="round">
+                    <rect x="2" y="3" width="15" height="11" rx="2" />
+                    <path d="M7 17l2-3h1l2 3M6 17h10" />
+                </svg></button><span class="cl">Screen</span></div>
+        <div class="ci">
+            <button class="btn sm" id="camB" onclick="toggleCam()">
+                <svg width="19" height="19" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.7"
+                    stroke-linecap="round">
+                    <path d="M13.5 7.5 18 5v11l-4.5-2.5V7.5z" />
+                    <rect x="1" y="5" width="12" height="11" rx="2.5" />
+                </svg>
+            </button>
+            <span class="cl">Camera</span>
+        </div>
+        <div class="ci"><button class="btn sm" id="mBtn" onclick="toggleMute()"><svg width="19" height="19" fill="none"
+                    stroke="rgba(255,255,255,.6)" stroke-width="1.7" stroke-linecap="round">
+                    <path d="M11 1a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                    <path d="M18 9v2a7 7 0 0 1-14 0V9" />
+                    <line x1="11" y1="19" x2="11" y2="22" />
+                    <line x1="7" y1="22" x2="15" y2="22" />
+                </svg></button><span class="cl">Mute</span></div>
+        <div class="ci"><button class="btn end" onclick="endS()"><svg width="22" height="22" fill="none" stroke="white"
+                    stroke-width="2.5" stroke-linecap="round">
+                    <line x1="17" y1="7" x2="7" y2="17" />
+                    <line x1="7" y1="7" x2="17" y2="17" />
+                </svg></button><span class="cl">End</span></div>
+    </div>
+
+    <script>
+        const GROQ = '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';
+        const GEMINI_KEY = 'AIzaSyCOuBh899glREfCJ-mPrPnNNMEtLAVJdy0';
+        const cv = document.getElementById('cv');
+        const ctx = cv.getContext('2d');
+        let appState = 'idle', t0 = Date.now(), hist = [];
+        let isHold = true, isMuted = false, isCaptions = true, recognition = null;
+        let micStream = null, audioCtx = null, analyser = null, camStream = null, screenStream = null;
+        let silenceTimer = null, lastTranscript = "", currentVoiceName = "", camFacing = "user";
+        const smoothedFrequencies = new Array(256).fill(0);
+        const fakeData = Array.from({ length: 64 }, () => 0);
+
+        // --- Orbian Vision: Spotlight Logic (Updated for Square Crop) ---
+        let visionActive = false;
+        let spotlightPos = { x: 0, y: 0 };
+        let targetSpotlightPos = { x: 0, y: 0 };
+        let spotlightSize = 0;
+        let targetSpotlightSize = 0;
+        const sCanvas = document.getElementById('spotlight-canvas');
+        const sCtx = sCanvas.getContext('2d');
+
+        function updateSpotlight() {
+            if (!visionActive) return;
+
+            // Smooth interpolation (Lerp)
+            spotlightPos.x += (targetSpotlightPos.x - spotlightPos.x) * 0.12;
+            spotlightPos.y += (targetSpotlightPos.y - spotlightPos.y) * 0.12;
+            spotlightSize += (targetSpotlightSize - spotlightSize) * 0.12;
+
+            const W = sCanvas.width / (window.devicePixelRatio || 1);
+            const H = sCanvas.height / (window.devicePixelRatio || 1);
+
+            sCtx.clearRect(0, 0, W, H);
+
+            // 1. Draw Deep Dimming Layer (High Contrast)
+            const dimAlpha = (spotlightSize / targetSpotlightSize) * 0.85; // Fade in dimming
+            sCtx.fillStyle = `rgba(0, 0, 0, ${dimAlpha})`;
+            sCtx.fillRect(0, 0, W, H);
+
+            const half = spotlightSize / 2;
+            const x = spotlightPos.x - half;
+            const y = spotlightPos.y - half;
+
+            // 2. Punch a Square Hole with Rounded Corners
+            sCtx.globalCompositeOperation = 'destination-out';
+            sCtx.beginPath();
+            sCtx.roundRect(x, y, spotlightSize, spotlightSize, 12);
+            sCtx.fill();
+
+            // 3. Reset Composite Op for HUD/Corners
+            sCtx.globalCompositeOperation = 'source-over';
+
+            // --- DRAW CROP CORNERS ---
+            sCtx.strokeStyle = '#a78bfa'; // Purple highlight
+            sCtx.lineWidth = 4;
+            sCtx.lineCap = 'round';
+            const cornerLen = 25;
+
+            // Top Left
+            sCtx.beginPath();
+            sCtx.moveTo(x, y + cornerLen); sCtx.lineTo(x, y); sCtx.lineTo(x + cornerLen, y);
+            sCtx.stroke();
+            // Top Right
+            sCtx.beginPath();
+            sCtx.moveTo(x + spotlightSize - cornerLen, y); sCtx.lineTo(x + spotlightSize, y); sCtx.lineTo(x + spotlightSize, y + cornerLen);
+            sCtx.stroke();
+            // Bottom Left
+            sCtx.beginPath();
+            sCtx.moveTo(x, y + spotlightSize - cornerLen); sCtx.lineTo(x, y + spotlightSize); sCtx.lineTo(x + cornerLen, y + spotlightSize);
+            sCtx.stroke();
+            // Bottom Right
+            sCtx.beginPath();
+            sCtx.moveTo(x + spotlightSize - cornerLen, y + spotlightSize); sCtx.lineTo(x + spotlightSize, y + spotlightSize); sCtx.lineTo(x + spotlightSize, y + spotlightSize - cornerLen);
+            sCtx.stroke();
+
+            // Subtle Glow inside crop
+            const glow = sCtx.createRadialGradient(spotlightPos.x, spotlightPos.y, 0, spotlightPos.x, spotlightPos.y, half);
+            glow.addColorStop(0, 'rgba(167, 139, 250, 0.05)');
+            glow.addColorStop(1, 'rgba(167, 139, 250, 0)');
+            sCtx.fillStyle = glow;
+            sCtx.fillRect(x, y, spotlightSize, spotlightSize);
+
+            requestAnimationFrame(updateSpotlight);
+        }
+
+        function activateSpotlight(px, py, size = 180) {
+            if (!visionActive) {
+                visionActive = true;
+                document.getElementById('spotlight-wrap').classList.add('on');
+                document.getElementById('vision-status').style.display = 'block';
+
+                // Set initial pos instantly to avoid fly-in from (0,0)
+                spotlightPos = { x: px, y: py };
+                spotlightSize = 0;
+
+                updateSpotlight();
+            }
+            targetSpotlightPos = { x: px, y: py };
+            targetSpotlightSize = size;
+        }
+
+        function deactivateSpotlight() {
+            targetSpotlightSize = 0;
+            setTimeout(() => {
+                if (targetSpotlightSize === 0) {
+                    visionActive = false;
+                    document.getElementById('spotlight-wrap').classList.remove('on');
+                    document.getElementById('vision-status').style.display = 'none';
+                }
+            }, 500);
+        }
+
+        // Capture frame for Gemini Vision Analysis
+        async function captureVisionFrame() {
+            const v = document.getElementById('camV');
+            if (!v || (!camStream && !screenStream)) return null;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = v.videoWidth;
+            canvas.height = v.videoHeight;
+            const ctx = canvas.getContext('2d');
+
+            // Mirror if using front cam
+            if (camFacing === 'user' && camStream) {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+            }
+
+            ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg', 0.8);
+        }
+
+        // Demo Function to test Spotlight (Remove later)
+        window.orbianDemoSpotlight = () => {
+            const W = window.innerWidth;
+            const H = window.innerHeight;
+            // Random pos
+            const x = 100 + Math.random() * (W - 200);
+            const y = 200 + Math.random() * (H - 400);
+            activateSpotlight(x, y, 120);
+            setTimeout(deactivateSpotlight, 3000);
+        };
+
+        (function loop() {
+            requestAnimationFrame(loop);
+            const dpr = Math.min(window.devicePixelRatio, 2);
+            const W = window.innerWidth, H = window.innerHeight;
+            if (cv.width !== W * dpr || cv.height !== H * dpr) {
+                cv.width = W * dpr; cv.height = H * dpr;
+                ctx.scale(dpr, dpr);
+                // Also resize spotlight canvas
+                sCanvas.width = W * dpr; sCanvas.height = H * dpr;
+                sCtx.scale(dpr, dpr);
+            }
+            const w = W, h = H, cx = w / 2, cy = h / 2 + 40;
+            const elapsed = (Date.now() - t0) / 1000;
+            ctx.fillStyle = '#04020a'; ctx.fillRect(0, 0, w, h);
+
+            let frequencies = fakeData;
+            if (analyser && (appState === 'listening' || appState === 'speaking')) {
+                const data = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(data);
+                frequencies = data;
+            } else {
+                for (let i = 0; i < frequencies.length; i++) {
+                    frequencies[i] = 10 + Math.sin(elapsed * 2 + i * 0.1) * 8;
+                    if (appState === 'thinking') frequencies[i] = 20 + Math.sin(elapsed * 5 + i * 0.2) * 15;
+                }
+            }
+            const lerpFactor = appState === 'listening' ? 0.35 : 0.15;
+            for (let i = 0; i < frequencies.length; i++) smoothedFrequencies[i] += (frequencies[i] - smoothedFrequencies[i]) * lerpFactor;
+
+            const barCount = 48, barWidth = (w * 0.7) / barCount, barGap = 4;
+            const startX = cx - ((barCount * (barWidth + barGap)) / 2);
+            for (let i = 0; i < barCount; i++) {
+                const dataIdx = Math.floor((i / barCount) * (smoothedFrequencies.length * 0.6));
+                let val = smoothedFrequencies[dataIdx];
+                let barHeight = (val / 255) * (h * 0.85);
+                if (appState === 'idle') barHeight = (smoothedFrequencies[i % 64] / 100) * (h * 0.35);
+                if (appState === 'thinking') barHeight = (smoothedFrequencies[i % 64] / 100) * (h * 0.5);
+                barHeight = Math.max(barHeight, 15);
+                let grad = ctx.createLinearGradient(0, cy - barHeight / 2, 0, cy + barHeight / 2);
+                if (appState === 'idle') { grad.addColorStop(0, '#0088ff'); grad.addColorStop(1, '#004488'); }
+                else if (appState === 'listening') { grad.addColorStop(0, '#00ffaa'); grad.addColorStop(1, '#008855'); }
+                else if (appState === 'thinking') { grad.addColorStop(0, '#aa88ff'); grad.addColorStop(1, '#5522aa'); }
+                else { grad.addColorStop(0, '#ff44aa'); grad.addColorStop(1, '#880055'); }
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.roundRect(startX + i * (barWidth + barGap), cy - barHeight / 2, barWidth, barHeight, barWidth / 2);
+                ctx.fill();
+            }
+        })();
+
+        function setState(s) {
+            appState = s;
+            const hBtn = document.getElementById('hBtn');
+            if (hBtn) {
+                hBtn.classList.toggle('on', s === 'listening');
+                document.getElementById('hLbl').textContent = s === 'listening' ? 'Stop' : 'Speak';
+            }
+        }
+
+        async function setupMic() {
+            if (micStream) return;
+            try {
+                micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser(); analyser.fftSize = 256;
+                audioCtx.createMediaStreamSource(micStream).connect(analyser);
+            } catch (e) { console.warn(e); }
+        }
+
+        function initSpeech() {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return;
+            recognition = new SR(); recognition.lang = 'en-IN'; recognition.interimResults = true;
+            recognition.onresult = e => {
+                let f = '', iv = '';
+                for (let i = e.resultIndex; i < e.results.length; i++) {
+                    if (e.results[i].isFinal) f += e.results[i][0].transcript;
+                    else iv += e.results[i][0].transcript;
+                }
+                const txt = f || iv; lastTranscript = txt;
+                const tp = document.getElementById('tr'); tp.textContent = txt;
+                if (isCaptions) tp.classList.toggle('on', !!txt);
+                if (isMuted) return;
+                clearTimeout(silenceTimer);
+                if (txt.trim()) {
+                    if (f.trim()) {
+                        clearTimeout(silenceTimer);
+                        silenceTimer = setTimeout(() => {
+                            if (appState === 'listening' && lastTranscript.trim()) {
+                                callAI(lastTranscript.trim());
+                            }
+                        }, 1200);
+                    } else {
+                        silenceTimer = setTimeout(() => {
+                            if (appState === 'listening' && lastTranscript.trim()) {
+                                callAI(lastTranscript.trim());
+                            }
+                        }, 2000);
+                    }
+                }
+            };
+            recognition.onerror = () => setState('idle');
+            recognition.onend = () => {
+                if (appState === 'listening') {
+                    try { recognition.start(); } catch (_) { }
+                } else if (!isHold && appState !== 'thinking' && appState !== 'speaking') {
+                    setState('idle');
+                }
+            };
+        }
+
+        async function toggleLiveSpeak() {
+            if (appState === 'listening') { clearTimeout(silenceTimer); stopL(); }
+            else { lastTranscript = ""; await startL(); }
+        }
+
+        async function startL() {
+            if (appState === 'thinking' || appState === 'speaking') { speechSynthesis.cancel(); setState('idle'); }
+            isHold = true; await setupMic(); if (!recognition) initSpeech();
+            speechSynthesis.cancel(); setState('listening');
+            try { recognition?.start(); } catch (_) { }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function stopL() { isHold = false; if (appState === 'listening') recognition?.stop(); }
+
+        async function callAI(text) {
+            if (appState !== 'listening' || isMuted) return;
+            recognition?.stop();
+            setState('thinking');
+
+            const lowerText = text.toLowerCase();
+            const isVisionContext = !!(camStream || screenStream);
+            let frame = null;
+
+            if (isVisionContext) {
+                document.getElementById('vision-status').textContent = "ORBIAN VISION: ANALYZING...";
+                document.getElementById('vision-status').style.display = 'block';
+                frame = await captureVisionFrame();
+            }
+
+            hist.push({ role: 'user', content: text });
+
+            try {
+                let reply = '';
+                if (isVisionContext && frame) {
+                    reply = await callGeminiVision(text, frame);
+                } else {
+                    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ}` },
+                        body: JSON.stringify({
+                            model: 'llama-3.1-8b-instant',
+                            messages: [{ role: 'system', content: 'You are Orbian AI. Always be respectful and polite. Use "aap" instead of "tu". Match the user\'s language: if they speak English, reply in natural English. If they speak Hindi/Hinglish, reply in proper Hindi using Devanagari script (like नमस्ते). Keep it concise, short sentences, no markdown.' }, ...hist],
+                            max_tokens: 120, temperature: 0.72
+                        })
+                    });
+                    const d = await r.json();
+                    reply = d.choices?.[0]?.message?.content || 'Sorry, try again.';
+                }
+
+                // Handle Spotlight/Localization from AI response
+                // Format expected: "The mouse is right there. COORDINATES:[45,52]"
+                const coordMatch = reply.match(/COORDINATES:\[(\d+),(\d+)\]/);
+                if (coordMatch) {
+                    const xPercent = parseInt(coordMatch[1]);
+                    const yPercent = parseInt(coordMatch[2]);
+                    const x = (xPercent / 100) * window.innerWidth;
+                    const y = (yPercent / 100) * window.innerHeight;
+                    activateSpotlight(x, y, 180);
+                    setTimeout(deactivateSpotlight, 4000);
+                    // Clean the reply for TTS
+                    reply = reply.replace(/COORDINATES:\[\d+,\d+\]/, '').trim();
+                }
+
+                hist.push({ role: 'assistant', content: reply });
+                sayIt(reply);
+
+                if (isVisionContext) {
+                    document.getElementById('vision-status').textContent = "ORBIAN VISION: TRACKING ACTIVE";
+                }
+            } catch (err) {
+                console.error("AI Call Error:", err);
+                sayIt('I am having trouble connecting right now.');
+                document.getElementById('vision-status').textContent = "CONNECTION ERROR";
+            }
+        }
+
+        async function callGeminiVision(text, base64Image) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+
+            // Extract base64 part
+            const base64Data = base64Image.split(',')[1];
+
+            const systemPrompt = `You are ORBIAN, an advanced Live Vision AI. You are talking to the user via video call.
+Tasks:
+1. Identifying Objects: If user asks "What is this", identify and explain it briefly.
+2. Locating Objects: If user asks "Where is [object]", find it. If found, include COORDINATES:[x,y] at the very end of your response, where x and y are percentages (0-100) of the object's center in the image.
+3. Fashion/Style: If user asks about clothes or "matching", provide expert fashion advice based on what they are wearing or showing.
+4. General: Be natural, concise (1-3 sentences), and polite. Use "aap" for Hindi.
+5. If the user's request is not visual, still answer it using the current frame as context.
+
+Format for Coordinates: COORDINATES:[X_PERCENT,Y_PERCENT]
+Example: "The mouse is on the left side of your desk. COORDINATES:[25,60]"`;
+
+            const body = {
+                contents: [{
+                    parts: [
+                        { text: systemPrompt + "\n\nUser Question: " + text },
+                        { inline_data: { mime_type: "image/jpeg", data: base64Data } }
+                    ]
+                }],
+                generationConfig: {
+                    maxOutputTokens: 150,
+                    temperature: 0.4
+                }
+            };
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            const data = await response.json();
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || "I can't see anything clearly right now.";
+        }
+
+        function sayIt(text) {
+            setState('speaking');
+            const tp = document.getElementById('tr'); tp.textContent = text;
+            if (isCaptions) tp.classList.add('on');
+            const clean = text.replace(/[^\w\s.,!?\u0900-\u097f'-]/g, '').trim();
+            const u = new SpeechSynthesisUtterance(clean);
+            const vs = speechSynthesis.getVoices();
+            let v = vs.find(voice => voice.name === currentVoiceName);
+            if (!v) {
+                const isHindi = /[\u0900-\u097f]/.test(text);
+                if (isHindi) v = vs.find(v => v.lang.startsWith('hi')) || vs.find(v => v.name.includes('Hindi'));
+                if (!v) v = vs.find(v => v.lang === 'en-IN') || vs.find(v => v.name.includes('Google UK English Female')) || vs.find(v => v.lang.startsWith('en')) || vs[0];
+                u.lang = isHindi ? 'hi-IN' : (v?.lang || 'en-IN');
+            } else u.lang = v.lang;
+            if (v) u.voice = v;
+            u.rate = 1.05; u.pitch = 1.0;
+            u.onend = () => {
+                setState('idle');
+                if (isCaptions) tp.classList.remove('on');
+                if (isHold) setTimeout(startL, 400);
+            };
+            speechSynthesis.cancel(); speechSynthesis.speak(u);
+        }
+
+        function loadVoices() {
+            const vs = speechSynthesis.getVoices();
+            const menu = document.getElementById('vMenu');
+            if (!menu) return;
+            menu.innerHTML = `<div class="v-item ${!currentVoiceName ? 'active' : ''}" onclick="selectVoice('', 'Auto Voice')">Auto Voice <small>Automatic detection</small></div>`;
+            vs.filter(v => v.lang.startsWith('en') || v.lang.startsWith('hi')).forEach(v => {
+                const div = document.createElement('div');
+                div.className = `v-item ${v.name === currentVoiceName ? 'active' : ''}`;
+                div.onclick = (e) => { e.stopPropagation(); selectVoice(v.name, v.name); };
+                div.innerHTML = `${v.name} <small>${v.lang}</small>`;
+                menu.appendChild(div);
+            });
+        }
+
+        function toggleVD(e) { e.stopPropagation(); document.getElementById('vMenu').classList.toggle('on'); }
+
+        function selectVoice(name, label) {
+            let shortName = label.split(' ')[0];
+            if (shortName === 'Google') shortName = label.split(' ')[1] || 'Voice';
+            document.getElementById('vSelected').textContent = name ? shortName : 'Auto Voice';
+            document.getElementById('vMenu').classList.remove('on');
+            loadVoices();
+        }
+
+        window.addEventListener('click', () => {
+            if (appState === 'idle' && !isMuted) {
+                startL();
+            }
+        });
+
+        // Proactive initialization attempt
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (appState === 'idle' && !isMuted) {
+                    startL().catch(e => console.log('Awaiting user interaction...'));
+                }
+            }, 1000);
+        });
+
+        speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+
+        function toggleCaptions() {
+            isCaptions = !isCaptions;
+            document.getElementById('capB').classList.toggle('on', isCaptions);
+            if (!isCaptions) document.getElementById('tr').classList.remove('on');
+            else if (document.getElementById('tr').textContent.trim()) document.getElementById('tr').classList.add('on');
+        }
+
+        async function toggleScreen() {
+            const btn = document.getElementById('screenB'), pip = document.getElementById('pip');
+            if (screenStream) {
+                screenStream.getTracks().forEach(t => t.stop()); screenStream = null;
+                pip.classList.remove('on'); btn.classList.remove('on-screen');
+                if (camStream) { document.getElementById('camV').srcObject = camStream; pip.classList.add('on'); }
+                return;
+            }
+            try {
+                screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                document.getElementById('camV').srcObject = screenStream;
+                pip.classList.add('on'); btn.classList.add('on-screen');
+                screenStream.getVideoTracks()[0].onended = () => { screenStream = null; pip.classList.remove('on'); btn.classList.remove('on-screen'); if (camStream) { document.getElementById('camV').srcObject = camStream; pip.classList.add('on'); } };
+            } catch (_) { }
+        }
+
+        async function toggleCam() {
+            const btn = document.getElementById('camB'), pip = document.getElementById('pip');
+            if (camStream) {
+                camStream.getTracks().forEach(t => t.stop()); camStream = null;
+                pip.classList.remove('on'); btn.classList.remove('on');
+                return;
+            }
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: { ideal: camFacing },
+                        width: { min: 320, ideal: 720, max: 1280 },
+                        height: { min: 320, ideal: 720, max: 1280 }
+                    }
+                };
+                camStream = await navigator.mediaDevices.getUserMedia(constraints);
+                const v = document.getElementById('camV');
+                v.srcObject = camStream;
+                v.onloadedmetadata = () => v.play().catch(e => console.warn("Camera play error:", e));
+                pip.classList.add('on'); btn.classList.add('on');
+                pip.classList.toggle('mirror', camFacing === 'user');
+                console.log("Camera started in", camFacing, "mode");
+            } catch (e) {
+                console.error("Camera error:", e);
+                // Fallback attempt: Any video track
+                try {
+                    camStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    document.getElementById('camV').srcObject = camStream;
+                    pip.classList.add('on'); btn.classList.add('on');
+                } catch (err2) {
+                    alert("Camera access failed! Please check permissions.");
+                }
+            }
+        }
+
+        async function flipCam() {
+            if (!camStream) return;
+            camFacing = camFacing === "user" ? "environment" : "user";
+            camStream.getTracks().forEach(t => t.stop());
+            camStream = null;
+            await toggleCam();
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            if (micStream) micStream.getAudioTracks().forEach(t => t.enabled = !isMuted);
+            document.getElementById('mBtn').classList.toggle('on', isMuted);
+            if (isMuted) {
+                if (appState === 'listening') recognition?.stop();
+                setState('idle');
+            } else {
+                if (appState === 'idle') startL();
+            }
+        }
+
+        function endS() {
+            speechSynthesis.cancel(); recognition?.abort();
+            [micStream, camStream, screenStream].forEach(s => s?.getTracks().forEach(t => t.stop()));
+            micStream = camStream = screenStream = null; hist = [];
+            setState('idle');
+            document.getElementById('tr').classList.remove('on');
+            document.getElementById('pip').classList.remove('on');
+            document.getElementById('camB').classList.remove('on');
+
+            // Navigate back to main app
+            setTimeout(() => {
+                window.location.href = '/app';
+            }, 300);
+        }
+    </script>
+</body>
+
+</html>

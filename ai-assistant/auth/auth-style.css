@@ -1,0 +1,457 @@
+/* ================================================================
+   ORBIAN AI — AUTH PAGE (FULL-SPLIT PREMIUM EDITION)
+   ================================================================ */
+
+:root {
+    --auth-bg: #ffffff;
+    --auth-black: #000000;
+    --auth-gray: #f9f9f9;
+    --auth-text-muted: #666666;
+    --auth-border: #e0e0e0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f2f5;
+    padding: 20px;
+}
+
+/* --- MAIN CONTAINER --- */
+.auth-card {
+    width: 95%;
+    max-width: 900px;
+    min-height: 560px;
+    background: #fff;
+    display: flex;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.08);
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: auto;
+}
+
+/* --- LEFT WHITE SIDE --- */
+.side-white {
+    width: 50%;
+    background: #fff;
+    padding: 40px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    /* Default (Login mode on left) */
+    position: relative;
+    z-index: 1;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.signup-active .side-white {
+    transform: translateX(100%);
+    align-items: flex-end;
+    /* Signup mode on right */
+}
+
+.form-container {
+    width: 100%;
+    max-width: 320px;
+    margin: 0;
+    /* Remove auto centering */
+}
+
+.form-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: var(--auth-black);
+    text-align: left;
+    letter-spacing: -1px;
+}
+
+.title-underline {
+    width: 40px;
+    height: 4px;
+    background: var(--auth-black);
+    margin: 0 0 30px 0;
+    border-radius: 2px;
+}
+
+/* --- RIGHT BLACK SIDE --- */
+.side-black {
+    width: 50%;
+    background: var(--auth-black);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    /* Push to right edge (Login mode) */
+    padding: 60px 60px;
+    position: relative;
+    z-index: 2;
+    clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), clip-path 0.6s ease-in-out;
+}
+
+.signup-active .side-black {
+    transform: translateX(-100%);
+    clip-path: polygon(0% 0, 85% 0, 100% 100%, 0% 100%);
+    align-items: flex-start;
+    /* Push to left edge (Signup mode) */
+    padding-left: 60px;
+}
+
+.side-content {
+    text-align: right;
+    /* Match alignment */
+    max-width: 320px;
+}
+
+.signup-active .side-content {
+    text-align: left;
+}
+
+.side-content h1 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+    color: #fff;
+    text-align: inherit;
+    /* Use parent alignment */
+}
+
+.side-content p {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.5;
+    text-align: inherit;
+}
+
+/* --- FORM ELEMENTS --- */
+.entry-group {
+    margin-bottom: 20px;
+}
+
+.entry-wrapper {
+    width: 100%;
+    border-bottom: 1.5px solid #000;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+.entry-wrapper input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #000;
+}
+
+.entry-wrapper input::placeholder {
+    color: #ccc;
+}
+
+.input-icon {
+    width: 18px;
+    height: 18px;
+    color: #000;
+}
+
+/* --- BUTTONS --- */
+.pill-btn.primary-action-btn {
+    width: 100%;
+    height: 52px;
+    /* Reduced from 60px */
+    background: var(--auth-black);
+    color: #fff;
+    border: none;
+    border-radius: 26px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.pill-btn.primary-action-btn:hover {
+    background: #222;
+}
+
+.divider-text {
+    margin: 20px 0 15px;
+    text-align: center;
+    color: #eee;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.divider-text::before,
+.divider-text::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #f0f0f0;
+}
+
+.oauth-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.orbian-oauth-btn {
+    width: 100%;
+    height: 48px;
+    /* Reduced from 52px */
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+}
+
+.orbian-oauth-btn:hover {
+    border-color: #000;
+}
+
+.oauth-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.google-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    padding: 0 !important;
+}
+
+.google-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    opacity: 0;
+}
+
+.google-overlay iframe {
+    width: 100% !important;
+    height: 100% !important;
+    cursor: pointer !important;
+}
+
+.switch-text {
+    margin-top: 20px;
+    font-size: 0.85rem;
+    color: #999;
+    text-align: center;
+}
+
+.switch-text a {
+    color: #000;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.switch-text a:hover {
+    text-decoration: underline;
+}
+
+/* --- FOOTER --- */
+.footer-links {
+    margin-top: 30px;
+    font-size: 0.7rem;
+    color: #ddd;
+    text-align: center;
+}
+
+/* --- EMAIL SUGGESTIONS --- */
+.email-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #eee;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    z-index: 100;
+    margin-top: 5px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 10px 15px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background: #f5f5f5;
+}
+
+/* --- MODAL & TOAST --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-card {
+    background: #fff;
+    padding: 45px 35px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    transition: 0.3s;
+}
+
+.close-modal:hover {
+    color: #000;
+}
+
+.modal-card h3 {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    color: #000;
+}
+
+.modal-card p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.toast {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #333;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    transform: translateY(100px);
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 2000;
+}
+
+.toast.active {
+    transform: translateY(0);
+}
+
+
+
+/* --- RESPONSIVE --- */
+@media (max-width: 1050px) {
+    .auth-card {
+        flex-direction: column;
+        width: 100%;
+        max-width: 450px;
+        height: auto;
+        min-height: auto;
+        border-radius: 12px;
+    }
+
+    .side-white {
+        width: 100%;
+        padding: 40px 25px;
+        order: 2;
+    }
+
+    .side-black {
+        width: 100%;
+        padding: 35px 25px;
+        clip-path: none;
+        order: 1;
+    }
+
+    .side-content h1 {
+        font-size: 2.2rem;
+        margin-bottom: 15px;
+    }
+
+    .side-content p {
+        font-size: 0.85rem;
+    }
+
+    .form-title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .side-white {
+        padding: 30px 15px;
+    }
+
+    .form-title {
+        font-size: 1.8rem;
+    }
+}
+
+.hidden {
+    display: none !important;
+}

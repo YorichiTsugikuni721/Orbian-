@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - Features Test</title>
+    <link rel="icon" type="image/png" href="../logo.png?v=6">
+    <link rel="apple-touch-icon" href="../logo.png?v=6">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="chat-header">
+            <div class="header-left">
+                <div class="logo-circle">AI</div>
+                <h2>Features Test</h2>
+            </div>
+            <div class="header-controls">
+                <!-- Ghost Mode Toggle -->
+                <button id="ghostBtn" class="control-btn" title="Toggle Ghost Mode (Privacy)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Chat Area -->
+        <main class="chat-area" id="chatArea">
+            <div class="message system">
+                <div class="message-content">
+                    Try typing sentences with different emotions to see the theme change!
+                    <br><br>
+                    - "I am so happy and excited!" (Green) <br>
+                    - "This error is frustrating me!" (Red) <br>
+                    - "Write me a python script." (Blue) <br>
+                    - "Tell me a romantic poem." (Purple)
+                </div>
+            </div>
+        </main>
+
+        <!-- Input Area -->
+        <footer class="input-area">
+            <div class="input-container">
+                <input type="text" id="messageInput" placeholder="Type a message to test mood...">
+                <button id="sendBtn">Send</button>
+            </div>
+            <p class="status-text" id="statusText">Mode: Normal (Saving History)</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

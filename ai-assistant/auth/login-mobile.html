@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Login — Orbian AI</title>
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="savanna-style.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+
+    <div class="auth-wrapper">
+        <!-- Header Tab -->
+        <div class="header-tab">Login</div>
+
+        <!-- Glassmorphism Card -->
+        <div class="auth-card">
+            <form id="loginForm">
+
+                <!-- Username Field -->
+                <div class="input-field">
+                    <input type="text" id="loginEmail" name="email" placeholder=" " required autocomplete="off">
+                    <label class="input-label-tag">Username</label>
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <div id="loginEmailSuggestions" class="email-suggestions hidden"></div>
+                </div>
+
+                <!-- Password Field with Floating Label -->
+                <div class="input-field">
+                    <input type="password" id="loginPassword" name="password" placeholder=" " required>
+                    <label class="input-label-tag">Password</label>
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+
+                <!-- Remember & Forgot Row -->
+                <div class="options-row">
+                    <label>
+                        <input type="checkbox" name="remember"> Remember me
+                    </label>
+                    <a href="#" id="openForgotBtn"
+                        onclick="document.getElementById('forgotModal').classList.add('active'); return false;">Forgot
+                        password?</a>
+                </div>
+
+                <!-- Login Button -->
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span>Login</span>
+                    <div class="loader hidden" id="loginLoader" style="margin: 0;"></div>
+                </button>
+
+                <div class="divider">Or login with</div>
+
+                <div class="oauth-buttons">
+                    <button type="button" class="oauth-btn" id="googleBtnWrapper">
+                        <div id="googleBtn"
+                            style="position: absolute; opacity: 0; width: 100%; height: 100%; top: 0; left: 0; z-index: 10;">
+                        </div>
+                        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google">
+                        <span style="font-family: inherit;">Continue with Google</span>
+                    </button>
+                </div>
+
+                <!-- Register Switch -->
+                <div class="switch-text">
+                    Don't have an account? <a href="signup-mobile">Register</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal-overlay" id="forgotModal">
+        <div class="modal-card">
+            <button class="close-modal" id="closeForgotBtn">&times;</button>
+
+            <div id="forgotStep1">
+                <h3>Forgot Password?</h3>
+                <p>Enter your email to receive a verification code.</p>
+                <input type="email" id="forgotEmail" placeholder="Email address" autocomplete="off">
+                <button class="modal-btn" id="sendOtpBtn" onclick="sendOTP()">
+                    <span>Send Code</span>
+                    <div class="btn-loader hidden" id="sendOtpLoader"></div>
+                </button>
+            </div>
+
+            <div id="forgotStep2" class="hidden">
+                <h3>Verify OTP</h3>
+                <p>Enter the 6-digit code sent to your email.</p>
+                <input type="text" id="otpInput" placeholder="Enter code" maxLength="6" autocomplete="off">
+                <button class="modal-btn" id="verifyOtpBtn" onclick="verifyOTP()">
+                    <span>Verify Code</span>
+                    <div class="btn-loader hidden" id="verifyOtpLoader"></div>
+                </button>
+            </div>
+
+            <div id="forgotStep3" class="hidden">
+                <h3>New Password</h3>
+                <p>Enter your new secure password.</p>
+                <input type="password" id="newPassword" placeholder="New password">
+                <button class="modal-btn" id="resetPwdBtn" onclick="resetPassword()">
+                    <span>Reset Password</span>
+                    <div class="btn-loader hidden" id="resetPwdLoader"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="auth.js"></script>
+</body>
+
+</html>

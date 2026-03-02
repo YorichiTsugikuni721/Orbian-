@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbian | Privacy Policy</title>
+    <link rel="icon" type="image/png" href="logo.png?v=6">
+    <link rel="apple-touch-icon" href="logo.png?v=6">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@400;600;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #111827;
+        }
+
+        .interactive-element:hover {
+            color: #000;
+        }
+    </style>
+</head>
+
+<body class="antialiased font-sans">
+
+    <!-- Navigation -->
+    <nav
+        class="fixed w-full z-50 px-10 py-6 flex justify-between items-center bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <a href="/"
+            class="interactive-element text-2xl font-black tracking-tighter text-gray-900 group font-montserrat">ORBIAN<span
+                class="text-gray-400 font-light group-hover:text-gray-600 transition">.AI</span></a>
+
+        <div class="hidden md:flex items-center gap-10">
+            <a href="app"
+                class="text-xs font-black text-gray-800 hover:text-black transition tracking-[0.15em] uppercase font-montserrat">Product</a>
+            <a href="/"
+                class="text-xs font-black text-gray-800 hover:text-black transition tracking-[0.15em] uppercase font-montserrat">Home</a>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <section class="pt-32 pb-20 px-6">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="font-serif text-5xl md:text-6xl text-gray-900 mb-10">Privacy Policy</h1>
+
+            <div class="prose prose-lg text-gray-600 max-w-none font-light">
+                <p class="mb-4">Last Updated: February 2026</p>
+                <p class="mb-8">At Orbian AI, we believe that privacy is not just a policy, but a fundamental human
+                    right. We have architected our systems to respect your data, your thoughts, and your digital
+                    footprint.</p>
+
+                <h2 class="font-serif text-2xl text-gray-800 mt-10 mb-4">1. Data Collection</h2>
+                <p class="mb-4">We collect only the essential information needed to provide you with a seamless
+                    experience. This includes account credentials and the content you explicitly provide during your
+                    interactions with Orbian.</p>
+
+                <h2 class="font-serif text-2xl text-gray-800 mt-10 mb-4">2. How We Use Your Data</h2>
+                <p class="mb-4">Your data is used exclusively to:
+                <ul class="list-disc pl-5 mb-4 space-y-2">
+                    <li>Personalize your AI interactions.</li>
+                    <li>Improve the accuracy of our response engines.</li>
+                    <li>Ensure the security of your account.</li>
+                </ul>
+                We do not sell your personal data to third parties.</p>
+
+                <h2 class="font-serif text-2xl text-gray-800 mt-10 mb-4">3. Security</h2>
+                <p class="mb-4">We employ state-of-the-art encryption standards to protect your data both in transit and
+                    at rest. Your conversations are yours alone.</p>
+
+                <h2 class="font-serif text-2xl text-gray-800 mt-10 mb-4">4. Your Rights</h2>
+                <p class="mb-4">You have the right to request access to, correction of, or deletion of your personal
+                    data at any time. Contact us for any privacy-related inquiries.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-16 bg-gray-50 border-t border-gray-100">
+        <div class="container mx-auto px-8 flex flex-col md:flex-row justify-between items-center opacity-80">
+            <div class="mb-4 md:mb-0">
+                <span class="font-serif font-bold text-gray-900 text-lg">Orbian</span><span
+                    class="text-gray-400">.Inc</span>
+            </div>
+            <div class="flex gap-8 text-sm text-gray-500 font-medium tracking-wide">
+                <a href="privacy" class="text-gray-900 font-bold">Privacy</a>
+                <a href="#" class="hover:text-gray-900 transition">Terms</a>
+                <a href="#" class="hover:text-gray-900 transition">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

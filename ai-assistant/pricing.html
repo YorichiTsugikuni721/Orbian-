@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbian | Pricing</title>
+    <link rel="shortcut icon" href="logo.png?v=6" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png?v=6">
+    <link rel="icon" type="image/svg+xml" href="logo.svg?v=6">
+    <link rel="apple-touch-icon" href="logo.png?v=6">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@400;600;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="bg-gray-50 font-inter text-gray-900">
+
+    <nav class="fixed w-full z-50 px-6 md:px-10 py-6 flex justify-between items-center bg-white/80 backdrop-blur-md transition-all duration-300 border-b border-gray-100"
+        id="navbar">
+        <a href="/" class="text-2xl font-black tracking-tighter text-gray-900 group font-montserrat">ORBIAN<span
+                class="text-gray-400 font-light group-hover:text-gray-600 transition">.AI</span></a>
+
+        <!-- Desktop Menu -->
+        <div class="hidden lg:flex items-center gap-10">
+            <a href="app"
+                class="text-xs font-black text-gray-800 hover:text-black transition tracking-[0.15em] uppercase font-montserrat">Product</a>
+            <a href="docs/"
+                class="text-xs font-black text-gray-800 hover:text-black transition tracking-[0.15em] uppercase font-montserrat">Docs</a>
+            <a href="pricing"
+                class="text-xs font-black text-black border-b-2 border-black transition tracking-[0.15em] uppercase font-montserrat">Pricing</a>
+            <a href="about"
+                class="text-xs font-black text-gray-800 hover:text-black transition tracking-[0.15em] uppercase font-montserrat">About</a>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <div class="hidden md:flex items-center gap-6">
+                <a href="auth/login"
+                    class="text-xs font-bold tracking-widest text-gray-900 hover:text-gray-600 transition uppercase font-montserrat">Log
+                    in</a>
+                <a href="auth/login#signup"
+                    class="bg-gray-900 text-white px-8 py-3 rounded-0 text-[10px] font-black tracking-widest uppercase hover:bg-gray-800 transition shadow-lg shadow-gray-200 font-montserrat"
+                    style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);">Get
+                    Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="py-32 px-6 text-center">
+        <h1 class="font-serif text-5xl md:text-6xl mb-6">Invest in clarity.</h1>
+        <p class="text-gray-500 max-w-2xl mx-auto text-lg mb-16 font-light">Choose a plan that fits your ambition. From
+            personal exploration to enterprise-grade intelligence.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <!-- Free to Start -->
+            <div
+                class="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 hover:shadow-xl transition duration-500 hover:-translate-y-2">
+                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Explorer</div>
+                <div class="text-4xl font-serif font-bold mb-2">₹0</div>
+                <p class="text-gray-400 text-sm mb-8">Perfect for daily tasks.</p>
+                <ul class="text-left space-y-4 mb-8 text-sm text-gray-600">
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                        <strong>100 Chats / Day</strong> (Refills Daily)
+                    </li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                        Standard Response Engines</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                        Community Support</li>
+                </ul>
+                <a href="auth/login"
+                    class="block w-full py-3 rounded-xl border border-gray-200 text-sm font-bold hover:bg-gray-50 transition">Start
+                    Free</a>
+            </div>
+
+            <!-- Pro -->
+            <div
+                class="bg-gray-900 text-white p-10 rounded-3xl shadow-2xl relative overflow-hidden transform md:-translate-y-4 hover:scale-105 transition duration-500">
+                <div
+                    class="absolute top-0 right-0 bg-blue-600 text-white text-[10px] uppercase font-bold px-3 py-1 rounded-bl-xl">
+                    Early Bird</div>
+                <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Professional</div>
+                <div class="text-4xl font-serif font-bold mb-2">₹199<span
+                        class="text-lg font-light text-gray-500">/mo</span></div>
+                <p class="text-gray-400 text-sm mb-8">Heavy usage for power users.</p>
+                <ul class="text-left space-y-4 mb-8 text-sm text-gray-300">
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i>
+                        <strong>1000 Chats / Day</strong> (High Quota)
+                    </li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i>
+                        Advanced Real-time Search</li>
+                    <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-blue-400"></i>
+                        Priority Response Speed</li>
+                </ul>
+                <a href="payment"
+                    class="block w-full py-3 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-500 transition shadow-lg shadow-blue-900/50">Upgrade
+                    to Pro</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

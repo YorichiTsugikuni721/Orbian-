@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbian | Pure Intelligence</title>
+    <!-- Fonts: Playfair Display + Inter + Montserrat -->
+    <link rel="shortcut icon" href="logo.png?v=6" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png?v=6">
+    <link rel="icon" type="image/svg+xml" href="logo.svg?v=6">
+    <link rel="apple-touch-icon" href="logo.png?v=6">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@400;600;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Prism.js for Code Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        lux: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            800: '#1f2937',
+                            900: '#111827',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 8s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%);
+            color: #111827;
+            overflow-x: hidden;
+            cursor: none;
+            /* Hide default cursor */
+        }
+
+        /* Custom Cursor */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #111827;
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(17, 24, 39, 0.5);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        /* Hover State for Cursor */
+        body.hovering .cursor-outline {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(17, 24, 39, 0.1);
+            border-color: transparent;
+        }
+
+        body.hovering .cursor-dot {
+            opacity: 0;
+        }
+
+        /* Typography Enhancements */
+        .luxury-text {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 3D Canvas Background */
+        #hero-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            /* Behind content */
+            pointer-events: none;
+        }
+
+        /* Glass Cards - Architect Light */
+        .glass-card-light {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 0px;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .glass-card-light:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Button - Architect Luxury */
+        .btn-luxury {
+            background: #111827;
+            color: #fff;
+            padding: 14px 35px;
+            border-radius: 0px;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .btn-luxury:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-link:hover {
+            color: #000;
+        }
+
+        /* Mobile Menu */
+        #mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100vh;
+            background: #ffffff;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: right 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        #mobile-menu.active {
+            right: 0;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .mobile-link {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            color: #111827;
+            margin: 15px 0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-link:hover {
+            opacity: 0.5;
+            transform: skewX(-5deg);
+        }
+
+        .hamburger {
+            display: none;
+            width: 30px;
+            height: 20px;
+            position: relative;
+            cursor: pointer;
+            z-index: 110;
+        }
+
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: #111827;
+            transition: .25s ease-in-out;
+        }
+
+        .hamburger span:nth-child(1) {
+            top: 0px;
+        }
+
+        .hamburger span:nth-child(2) {
+            top: 10px;
+        }
+
+        .hamburger span:nth-child(3) {
+            top: 20px;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            top: 10px;
+            transform: rotate(135deg);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+            left: -60px;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            top: 10px;
+            transform: rotate(-135deg);
+        }
+
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+
+            nav {
+                padding-left: 1.5rem !important;
+                padding-right: 1.5rem !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="luxury-text">
+
+    <!-- Custom Cursor Elements -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- 3D Canvas -->
+    <canvas id="hero-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 px-6 md:px-10 py-6 flex justify-between items-center bg-white/0 backdrop-blur-md transition-all duration-300 border-b border-transparent"
+        id="navbar">
+        <a href="/"
+            class="interactive-element text-2xl font-black tracking-tighter text-gray-900 group font-montserrat">ORBIAN<span
+                class="text-gray-400 font-light group-hover:text-gray-600 transition">.AI</span></a>
+
+        <!-- Desktop Menu -->
+        <div class="hidden lg:flex items-center gap-10">
+            <a href="app"
+                class="interactive-element text-xs font-black text-gray-800 hover:text-black transition tracking-[0.15em] uppercase font-montserrat">Product</a>
+            <a href="docs/"
+                class="interactive-element text-xs font-black text-gray-800 hover:text-black transition tracking-[0.15em] uppercase font-montserrat">Docs</a>
+            <a href="pricing"
+                class="interactive-element text-xs font-black text-gray-800 hover:text-black transition tracking-[0.15em] uppercase font-montserrat">Pricing</a>
+            <a href="about"
+                class="interactive-element text-xs font-black text-gray-800 hover:text-black transition tracking-[0.15em] uppercase font-montserrat">About</a>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <div class="hidden md:flex items-center gap-6">
+                <a href="auth/login"
+                    class="interactive-element text-xs font-bold tracking-widest text-gray-900 hover:text-gray-600 transition uppercase font-montserrat">Log
+                    in</a>
+                <a href="auth/login#signup"
+                    class="interactive-element bg-gray-900 text-white px-8 py-3 rounded-0 text-[10px] font-black tracking-widest uppercase hover:bg-gray-800 transition shadow-lg shadow-gray-200 font-montserrat"
+                    style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);">Get
+                    Started</a>
+            </div>
+
+            <!-- Hamburger Menu Toggle -->
+            <div class="hamburger lg:hidden" id="hamburger-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu">
+        <a href="app" class="mobile-link" onclick="toggleMobileMenu()">Product</a>
+        <a href="docs/" class="mobile-link" onclick="toggleMobileMenu()">Docs</a>
+        <a href="pricing" class="mobile-link" onclick="toggleMobileMenu()">Pricing</a>
+        <a href="about" class="mobile-link" onclick="toggleMobileMenu()">About</a>
+        <div class="mt-10 flex flex-col items-center gap-6">
+            <a href="auth/login" class="text-sm font-bold tracking-widest uppercase font-montserrat"
+                onclick="toggleMobileMenu()">Log in</a>
+            <a href="auth/login#signup"
+                class="bg-gray-900 text-white px-10 py-4 text-[12px] font-black tracking-widest uppercase font-montserrat"
+                style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);"
+                onclick="toggleMobileMenu()">Get Started</a>
+        </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section class="h-screen flex flex-col justify-end pb-24 items-center text-center px-6 relative">
+        <div class="max-w-4xl mx-auto z-10 reveal-up visible">
+            <!-- Owner Credit -->
+            <p class="text-xs font-bold tracking-[0.2em] text-gray-400 uppercase mb-6 font-montserrat">Architected by
+                Himanshu Raj</p>
+
+            <h1 class="font-serif text-5xl md:text-7xl lg:text-9xl text-gray-900 mb-6 leading-[1.1]">
+                Intelligence, <br class="hidden md:block"> <span class="text-gray-400 italic">curated.</span>
+            </h1>
+            <p class="text-gray-500 text-lg md:text-xl font-medium max-w-xl mx-auto mb-10 leading-relaxed font-inter">
+                A seamless dialogue between human intent and artificial brilliance. Encased in a pure, distraction-free
+                environment.
+            </p>
+
+            <div class="flex gap-4 justify-center">
+                <a href="app"
+                    class="interactive-element btn-luxury px-10 py-4 rounded-full text-sm font-bold tracking-widest uppercase font-montserrat">
+                    Launch Experience
+                </a>
+                <a href="#pricing"
+                    class="interactive-element bg-white text-gray-900 border border-gray-200 px-10 py-4 rounded-full text-sm font-bold tracking-widest uppercase hover:bg-gray-50 transition border-opacity-50 backdrop-blur-md font-montserrat">
+                    View Plans
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES / CAPABILITIES -->
+    <section id="features" class="py-32 bg-white relative z-10">
+        <div class="container mx-auto px-8">
+            <div class="text-center mb-24 reveal-up">
+                <h2 class="font-serif text-4xl md:text-5xl text-gray-900 mb-6">Designed for Focus.</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto font-light text-lg">Every pixel serves a purpose. Every
+                    interaction is calculated. The interface disappears, leaving only your thoughts.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="interactive-element glass-card-light p-10 rounded-3xl reveal-up">
+                    <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mb-8 text-gray-900">
+                        <i data-lucide="mic" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl mb-4 text-gray-900">Natural Voice</h3>
+                    <p class="text-gray-500 font-light leading-relaxed">Speak freely. Orbian understands nuance, pauses,
+                        and context, transcribing your thoughts into eloquent prose perfectly.</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="interactive-element glass-card-light p-10 rounded-3xl md:-translate-y-12 reveal-up"
+                    style="transition-delay: 0.1s;">
+                    <div
+                        class="w-14 h-14 bg-gray-900 rounded-full flex items-center justify-center mb-8 text-white shadow-xl">
+                        <i data-lucide="layers" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl mb-4 text-gray-900">Spatial Context</h3>
+                    <p class="text-gray-500 font-light leading-relaxed">Drag, drop, and organize your ideas in a 3D
+                        workspace. Relationships between concepts are visualized automatically.</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="interactive-element glass-card-light p-10 rounded-3xl reveal-up"
+                    style="transition-delay: 0.2s;">
+                    <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mb-8 text-gray-900">
+                        <i data-lucide="sparkles" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl mb-4 text-gray-900">Generative Code</h3>
+                    <p class="text-gray-500 font-light leading-relaxed">From simple scripts to complex architecture. The
+                        built-in Code Forge writes, debugs, and deploys at the speed of thought.</p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="interactive-element glass-card-light p-10 rounded-3xl md:-translate-y-12 reveal-up"
+                    style="transition-delay: 0.3s;">
+                    <div
+                        class="w-14 h-14 bg-gray-900 rounded-full flex items-center justify-center mb-8 text-white shadow-xl">
+                        <i data-lucide="infinity" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl mb-4 text-gray-900">Deep Memory</h3>
+                    <p class="text-gray-500 font-light leading-relaxed">Never forgets a detail. Orbian recalls every
+                        conversation, snippet, and idea across your entire history instantly.</p>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="interactive-element glass-card-light p-10 rounded-3xl reveal-up"
+                    style="transition-delay: 0.4s;">
+                    <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mb-8 text-gray-900">
+                        <i data-lucide="zap" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl mb-4 text-gray-900">Predictive Logic</h3>
+                    <p class="text-gray-500 font-light leading-relaxed">It doesn't just answer; it anticipates. Orbian
+                        pre-fetches context and resources before you even finish typing.</p>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="interactive-element glass-card-light p-10 rounded-3xl md:-translate-y-12 reveal-up"
+                    style="transition-delay: 0.5s;">
+                    <div
+                        class="w-14 h-14 bg-gray-900 rounded-full flex items-center justify-center mb-8 text-white shadow-xl">
+                        <i data-lucide="eye" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl mb-4 text-gray-900">Visual Intelligence</h3>
+                    <p class="text-gray-500 font-light leading-relaxed">Show, don't just tell. Upload images, diagrams,
+                        or rough sketches—Orbian analyzes and iterates on them with you.</p>
+                </div>
+
+                <!-- Card 7: PPT Studio (Integrated) -->
+                <div class="interactive-element glass-card-light p-10 rounded-3xl reveal-up"
+                    style="transition-delay: 0.6s;">
+                    <div
+                        class="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center mb-8 text-white shadow-lg">
+                        <i data-lucide="presentation" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl mb-4 text-gray-900">PPT Studio</h3>
+                    <p class="text-gray-500 font-light leading-relaxed">Convert your research and data into professional
+                        slide decks instantly. Download as .pptx or view interactive web slides.</p>
+                    <a href="/ppt-studio"
+                        class="inline-block mt-4 text-xs font-bold text-blue-600 uppercase tracking-widest hover:underline">Launch
+                        Studio →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section id="pricing" class="py-32 bg-gray-50 relative z-10 border-t border-gray-200">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="font-serif text-4xl md:text-5xl text-gray-900 mb-6 reveal-up">Invest in Clarity.</h2>
+            <p class="text-gray-500 max-w-2xl mx-auto text-lg mb-16 font-light reveal-up">Choose a plan that fits your
+                ambition.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Free -->
+                <div class="interactive-element bg-white p-10 border border-gray-100 hover:shadow-2xl transition duration-500 hover:-translate-y-2 reveal-up"
+                    style="clip-path: polygon(0 0, 100% 0, 100% 100%, 30px 100%, 0 calc(100% - 30px));">
+                    <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 font-montserrat">Explorer
+                    </div>
+                    <div class="text-4xl font-serif font-bold mb-2">₹0</div>
+                    <p class="text-gray-400 text-sm mb-8">Perfect for daily tasks.</p>
+                    <ul class="text-left space-y-4 mb-8 text-sm text-gray-600">
+                        <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            <strong>100 Chats / Day</strong> (Refills Daily)
+                        </li>
+                        <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            Standard Response Engines</li>
+                        <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-green-500"></i>
+                            Community Support</li>
+                    </ul>
+                    <a href="auth/login"
+                        class="block w-full py-4 bg-gray-50 text-sm font-bold font-montserrat hover:bg-gray-100 transition"
+                        style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);">Start
+                        Free</a>
+                </div>
+
+                <!-- Pro -->
+                <div class="interactive-element bg-gray-900 text-white p-10 shadow-2xl relative overflow-hidden transform md:-translate-y-8 hover:scale-105 transition duration-500 reveal-up"
+                    style="clip-path: polygon(30px 0, 100% 0, 100% 100%, 0 100%, 0 30px);">
+                    <div
+                        class="absolute top-0 right-0 bg-blue-600 text-white text-[10px] uppercase font-bold px-4 py-2 font-montserrat">
+                        Early Bird Offer</div>
+                    <div class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 font-montserrat">
+                        Professional</div>
+                    <div class="text-4xl font-serif font-bold mb-2">₹199<span
+                            class="text-lg font-light text-gray-500">/mo</span></div>
+                    <p class="text-gray-400 text-sm mb-8">Heavy usage for power users.</p>
+                    <ul class="text-left space-y-4 mb-8 text-sm text-gray-300">
+                        <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                            <strong>1000 Chats / Day</strong> (High Quota)
+                        </li>
+                        <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                            Advanced Real-time Search</li>
+                        <li class="flex items-center gap-3"><i data-lucide="check" class="w-4 h-4 text-green-400"></i>
+                            Priority Response Speed</li>
+                    </ul>
+                    <a href="payment"
+                        class="block w-full py-4 bg-blue-600 text-white text-sm font-bold font-montserrat hover:bg-blue-500 transition shadow-lg shadow-blue-900/50"
+                        style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);">Upgrade
+                        to Pro</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRUSTED BY (Social Proof - Bottom) -->
+    <section class="py-20 border-t border-gray-200 bg-white relative z-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-10 font-montserrat">Powered by
+                technology from</p>
+            <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 transition-all duration-500">
+
+                <!-- Google -->
+                <div
+                    class="flex items-center gap-2 font-black font-montserrat text-xl text-gray-900 tracking-tighter hover:scale-105 transition">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill="#EA4335"
+                            d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
+                    </svg>
+                    GOOGLE
+                </div>
+
+                <!-- Microsoft -->
+                <div
+                    class="flex items-center gap-2 font-black font-montserrat text-xl text-gray-900 tracking-tighter hover:scale-105 transition">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24">
+                        <path fill="#F25022"
+                            d="M2.45,2h9.1c0.25,0,0.45,0.2,0.45,0.45v9.1c0,0.25-0.2,0.45-0.45,0.45h-9.1C2.2,12,2,11.8,2,11.55v-9.1C2,2.2,2.2,2,2.45,2z" />
+                        <path fill="#7FBA00"
+                            d="M12.45,2h9.1c0.25,0,0.45,0.2,0.45,0.45v9.1c0,0.25-0.2,0.45-0.45,0.45h-9.1C12.2,12,12,11.8,12,11.55v-9.1C12,2.2,12.2,2,12.45,2z" />
+                        <path fill="#00A4EF"
+                            d="M2.45,12h9.1c0.25,0,0.45,0.2,0.45,0.45v9.1c0,0.25-0.2,0.45-0.45,0.45h-9.1C2.2,22,2,21.8,2,21.55v-9.1C2,12.2,2.2,12,2.45,12z" />
+                        <path fill="#FFB900"
+                            d="M12.45,12h9.1c0.25,0,0.45,0.2,0.45,0.45v9.1c0,0.25-0.2,0.45-0.45,0.45h-9.1C12.2,22,12,21.8,12,21.55v-9.1C12,12.2,12.2,12,12.45,12z" />
+                    </svg>
+                    MICROSOFT
+                </div>
+
+                <!-- OpenAI -->
+                <div
+                    class="flex items-center gap-2 font-black font-montserrat text-xl text-gray-900 tracking-tighter hover:scale-105 transition">
+                    <svg class="w-6 h-6 text-black" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9723V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1195 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0232v-.0237a4.485 4.485 0 0 1 .5346 3.0137l-.142-.0852-4.783-2.7582a.7712.7712 0 0 0-.7806 0L9.934 12.2187V9.891a.0639.0639 0 0 1 .0332-.0615l4.8732-2.8149a4.4944 4.4944 0 0 1 6.1494 1.6464zM13.3447 3.8634a4.5039 4.5039 0 0 1 2.8764 1.0408l-.1419.0804-4.7783 2.7582a.7948.7948 0 0 0-.3927.6813v6.7369L8.8882 13.9924a.071.071 0 0 1-.038-.052V8.3579a4.5039 4.5039 0 0 1 4.4945-4.4945zm-1.1215 7.4267l2.848-1.6416-2.8432-1.6416-2.8528 1.6463 2.848 1.6369z" />
+                    </svg>
+                    OPENAI
+                </div>
+
+                <!-- Anthropic (Claude) -->
+                <div
+                    class="flex items-center gap-2 font-black font-montserrat text-xl text-gray-900 tracking-tighter hover:scale-105 transition">
+                    <span class="bg-[#d97757] text-white rounded px-1 text-sm font-serif">A</span>
+                    ANTHROPIC
+                </div>
+
+                <!-- Meta -->
+                <div
+                    class="flex items-center gap-2 font-black font-montserrat text-xl text-gray-900 tracking-tighter hover:scale-105 transition">
+                    <svg class="w-6 h-6 text-[#0668E1]" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.66 14.5c-1.42 0-2.3-1.07-2.66-2.22-.36 1.15-1.24 2.22-2.66 2.22-1.9 0-3.11-1.6-3.11-3.66s1.22-3.66 3.11-3.66c1.37 0 2.22 1.05 2.62 2.14.39-1.09 1.25-2.14 2.62-2.14 1.84 0 3.03 1.57 3.03 3.66s-1.19 3.66-3.03 3.66z" />
+                    </svg>
+                    META
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-16 bg-white border-t border-gray-100">
+        <div
+            class="container mx-auto px-8 flex flex-col md:flex-row justify-between items-center opacity-60 hover:opacity-100 transition duration-500">
+            <div class="mb-4 md:mb-0">
+                <span class="font-serif font-bold text-gray-900 text-lg">Orbian</span><span
+                    class="text-gray-400">.Inc</span>
+            </div>
+            <div class="flex gap-8 text-sm text-gray-500 font-medium tracking-wide">
+                <a href="privacy" class="interactive-element hover:text-gray-900 transition">Privacy</a>
+                <a href="#" class="interactive-element hover:text-gray-900 transition">Terms</a>
+                <a href="#" class="interactive-element hover:text-gray-900 transition">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // Icons
+        lucide.createIcons();
+
+        // Reveal Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal-up').forEach(el => observer.observe(el));
+
+        // --- CUSTOM CURSOR LOGIC ---
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            // Dot follows instantly
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            // Outline follows with slight lag
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // Hover Interactions
+        const interactiveElements = document.querySelectorAll('.interactive-element, a, button');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+        });
+
+
+        // Hamburger Menu Logic
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const hamburger = document.getElementById('hamburger-toggle');
+            menu.classList.toggle('active');
+            hamburger.classList.toggle('active');
+
+            if (menu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // 3D SCENE SETUP
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.Fog(0xf9fafb, 5, 15);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('#hero-canvas'),
+            alpha: true,
+            antialias: true
+        });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // --- OBJECTS ---
+
+        // 1. The "Device" / Abstract Form (Torus Knot) - REVERTED TO THIS
+        const geometry = new THREE.TorusKnotGeometry(1.2, 0.4, 300, 50, 2, 3);
+
+        // 2. Material: Liquid Metal / Diamond
+        const material = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff,
+            roughness: 0.15,
+            metalness: 0.1,
+            clearcoat: 0.8,
+            clearcoatRoughness: 0.1,
+            reflectivity: 1,
+            transmission: 0,
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        // Satellites
+        const sphereGeo = new THREE.SphereGeometry(0.2, 32, 32);
+        const sphereMat = new THREE.MeshPhysicalMaterial({
+            color: 0xe5e7eb,
+            roughness: 0.2,
+            metalness: 0.8,
+        });
+
+        const s1 = new THREE.Mesh(sphereGeo, sphereMat);
+        s1.position.set(2.5, 1.5, -1);
+        scene.add(s1);
+
+        const s2 = new THREE.Mesh(sphereGeo, sphereMat);
+        s2.position.set(-2.2, -1.8, 0.5);
+        s2.scale.set(1.5, 1.5, 1.5);
+        scene.add(s2);
+
+
+        // --- STUDIO LIGHTING ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+
+        const keyLight = new THREE.DirectionalLight(0xfff5e6, 1.0);
+        keyLight.position.set(5, 5, 5);
+        scene.add(keyLight);
+
+        const fillLight = new THREE.DirectionalLight(0xe6f0ff, 0.6);
+        fillLight.position.set(-5, 3, 5);
+        scene.add(fillLight);
+
+        const rimLight = new THREE.SpotLight(0xffffff, 2);
+        rimLight.position.set(0, 10, -5);
+        rimLight.lookAt(mesh.position);
+        scene.add(rimLight);
+
+        // Camera Position
+        camera.position.z = 8;
+        camera.position.y = 0;
+
+        // ANIMATION LOOP
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetRotX = 0;
+        let targetRotY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.0005;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.0005;
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            const time = clock.getElapsedTime();
+            requestAnimationFrame(animate);
+
+            // Smooth automatic rotation
+            mesh.rotation.x = time * 0.15;
+            mesh.rotation.y = time * 0.2;
+
+            // Parallax
+            targetRotX += (mouseY - targetRotX) * 0.05;
+            targetRotY += (mouseX - targetRotY) * 0.05;
+
+            mesh.rotation.x += targetRotX;
+            mesh.rotation.y += targetRotY;
+
+            // Float
+            mesh.position.y = Math.sin(time * 0.5) * 0.2;
+
+            // Orbit Satellites
+            s1.position.y = 1.5 + Math.sin(time * 0.8) * 0.3;
+            s1.position.x = 2.5 + Math.cos(time * 0.4) * 0.2;
+
+            s2.position.y = -1.8 + Math.cos(time * 0.6) * 0.3;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('bg-white/80', 'shadow-sm');
+                nav.classList.remove('bg-white/0');
+            } else {
+                nav.classList.remove('bg-white/80', 'shadow-sm');
+                nav.classList.add('bg-white/0');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbian Document Studio</title>
+    <link rel="icon" type="image/png" href="logo.png?v=6">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+    <script src="ppt_exporter.js"></script>
+    <script src="web_ppt.js"></script>
+
+    <style>
+        :root {
+            --p: #6366f1;
+            --s: #a855f7;
+            --bg: #0a0f1e;
+            --card: rgba(15, 23, 42, 0.85);
+            --border: rgba(255, 255, 255, 0.07);
+            --text: #e2e8f0;
+            --muted: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── BACKGROUND ── */
+        .nx-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: radial-gradient(ellipse at 10% 5%, #0d1b35, #000510);
+        }
+
+        .nx-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(130px);
+            opacity: 0.12;
+            pointer-events: none;
+        }
+
+        .blob1 {
+            width: 700px;
+            height: 700px;
+            background: #6366f1;
+            top: -15%;
+            right: -8%;
+        }
+
+        .blob2 {
+            width: 500px;
+            height: 500px;
+            background: #a855f7;
+            bottom: -10%;
+            left: -5%;
+        }
+
+        /* ── LAYOUT ── */
+        .studio-wrap {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            grid-template-rows: 64px 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* ── HEADER ── */
+        .nx-header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 0 28px;
+            background: rgba(10, 15, 30, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nx-header .logo-img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .nx-header .logo-name {
+            font-size: 1.05rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nx-header .badge {
+            margin-left: 4px;
+            background: linear-gradient(135deg, var(--p), var(--s));
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 100px;
+            color: #fff;
+        }
+
+        .nx-header .back-btn {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #64748b;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 6px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .nx-header .back-btn:hover {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ── LEFT PANEL (Controls) ── */
+        .nx-panel {
+            background: rgba(10, 15, 30, 0.8);
+            border-right: 1px solid var(--border);
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .panel-section-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        /* Prompt area */
+        .prompt-wrap {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .prompt-wrap textarea {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            resize: none;
+            width: 100%;
+            min-height: 120px;
+        }
+
+        .prompt-wrap textarea::placeholder {
+            color: #475569;
+        }
+
+        .prompt-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .model-tag {
+            font-size: 0.72rem;
+            color: #475569;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, var(--p), var(--s));
+            color: #fff;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 22px rgba(99, 102, 241, 0.5);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .generate-btn .spin {
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        .generate-btn.loading .spin {
+            display: block;
+        }
+
+        .generate-btn.loading .icon {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Config inputs */
+        .config-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .config-row label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .config-row input {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 9px 12px;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.88rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .config-row input:focus {
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        /* Export buttons */
+        .export-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .exp-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 12px;
+            color: #e2e8f0;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .exp-btn:hover {
+            background: rgba(255, 255, 255, 0.09);
+            transform: translateY(-2px);
+        }
+
+        .exp-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .exp-btn .exp-icon {
+            font-size: 1.4rem;
+        }
+
+        .exp-btn-pptx:hover {
+            border-color: rgba(99, 102, 241, 0.6);
+        }
+
+        .exp-btn-pdf:hover {
+            border-color: rgba(220, 38, 38, 0.6);
+        }
+
+        .exp-btn-docx:hover {
+            border-color: rgba(37, 99, 235, 0.6);
+        }
+
+        .exp-btn-xlsx:hover {
+            border-color: rgba(22, 163, 74, 0.6);
+        }
+
+        .preview-btn {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 14px;
+            padding: 12px;
+            color: #818cf8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .preview-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .preview-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        /* ── RIGHT PANEL (Preview) ── */
+        .nx-preview {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .preview-header {
+            padding: 16px 28px;
+            background: rgba(10, 15, 30, 0.6);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .preview-header h2 {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .slide-counter {
+            font-size: 0.78rem;
+            color: #475569;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .slides-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Slide card */
+        .slide-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            animation: slideIn 0.4s ease forwards;
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .slide-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .slide-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .slide-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .slide-card:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .slide-card:nth-child(6) {
+            animation-delay: 0.3s;
+        }
+
+        .slide-header-bar {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .slide-num {
+            background: var(--p);
+            color: #fff;
+            font-size: 0.7rem;
+            font-weight: 800;
+            width: 24px;
+            height: 24px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .slide-title-text {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #f1f5f9;
+        }
+
+        .slide-body {
+            padding: 18px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slide-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.88rem;
+            color: #94a3b8;
+            line-height: 1.55;
+        }
+
+        .slide-point::before {
+            content: '▸';
+            color: var(--p);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #334155;
+            text-align: center;
+            gap: 12px;
+        }
+
+        .empty-state .e-icon {
+            font-size: 4rem;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+            max-width: 280px;
+            line-height: 1.5;
+        }
+
+        /* Status bar */
+        .status-bar {
+            background: rgba(10, 15, 30, 0.8);
+            border-top: 1px solid var(--border);
+            padding: 8px 28px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.76rem;
+            color: #475569;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.35;
+            }
+        }
+
+        /* Title slide card */
+        .title-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            padding: 40px 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.4s ease forwards;
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        .title-card::before {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 50%;
+            filter: blur(40px);
+        }
+
+        .title-card h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .title-card p {
+            color: #818cf8;
+            font-size: 1rem;
+        }
+
+        /* scrollbar */
+        .slides-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .slides-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+        }
+
+        .nx-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .nx-panel::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+        }
+
+        /* footer */
+        .nx-footer {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #1e293b;
+            font-size: 0.72rem;
+            font-family: 'JetBrains Mono', monospace;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="nx-bg">
+        <div class="nx-blob blob1"></div>
+        <div class="nx-blob blob2"></div>
+    </div>
+
+    <div class="studio-wrap">
+
+        <!-- HEADER -->
+        <header class="nx-header">
+            <img src="logo.png?v=6" class="logo-img" alt="Orbian">
+            <span class="logo-name">ORBIAN</span>
+            <span class="badge">Document Studio</span>
+            <a href="/app" class="back-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Back to Chat
+            </a>
+        </header>
+
+        <!-- LEFT PANEL -->
+        <aside class="nx-panel">
+
+            <!-- API Key -->
+            <div>
+                <p class="panel-section-title">Gemini API Key</p>
+                <div class="config-row">
+                    <input type="password" id="apiKeyInput" placeholder="AIzaSy..." autocomplete="off">
+                </div>
+            </div>
+
+            <!-- Prompt -->
+            <div>
+                <p class="panel-section-title">AI Prompt</p>
+                <div class="prompt-wrap">
+                    <textarea id="promptInput"
+                        placeholder="e.g. Create a 5-slide presentation about Artificial Intelligence — cover intro, uses, benefits, challenges, and future scope."></textarea>
+                    <div class="prompt-footer">
+                        <span class="model-tag">gemini-2.5-flash</span>
+                        <button class="generate-btn" id="generateBtn" onclick="generatePresentation()">
+                            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.5">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                            </svg>
+                            <svg class="spin" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2.5">
+                                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                            </svg>
+                            Generate
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme Selection -->
+            <div class="config-row">
+                <label>Design Theme</label>
+                <select id="themeSelect" onchange="updatePreviewTheme()" style="
+                    background: rgba(255,255,255,0.04);
+                    border: 1px solid var(--border);
+                    border-radius: 10px; padding: 9px 12px;
+                    color: #e2e8f0; font-family: 'Inter', sans-serif;
+                    font-size: 0.88rem; outline: none;">
+                    <option value="orbian">Modern Indigo (Dark)</option>
+                    <option value="emerald">Emerald Forest (Green)</option>
+                    <option value="rose">Rose Premium (Maroon)</option>
+                    <option value="midnight">Midnight Monochrome (Onyx)</option>
+                    <option value="amber">Amber Corporate (Gold)</option>
+                </select>
+            </div>
+
+            <!-- Slides Count -->
+            <div class="config-row">
+                <label>Number of Slides</label>
+                <input type="number" id="slideCount" value="5" min="2" max="20">
+            </div>
+
+            <!-- Divider -->
+            <hr style="border:none; border-top:1px solid rgba(255,255,255,0.06)">
+
+            <!-- Export -->
+            <div>
+                <p class="panel-section-title">Export</p>
+                <div class="export-grid">
+                    <button class="exp-btn exp-btn-pptx" id="btnPptx" onclick="doExport('pptx')" disabled>
+                        <span class="exp-icon">📊</span>
+                        PowerPoint
+                    </button>
+                    <button class="exp-btn exp-btn-pdf" id="btnPdf" onclick="doExport('pdf')" disabled>
+                        <span class="exp-icon">📄</span>
+                        PDF
+                    </button>
+                    <button class="exp-btn exp-btn-docx" id="btnDocx" onclick="doExport('docx')" disabled>
+                        <span class="exp-icon">📝</span>
+                        Word
+                    </button>
+                    <button class="exp-btn exp-btn-xlsx" id="btnXlsx" onclick="doExport('xlsx')" disabled>
+                        <span class="exp-icon">📈</span>
+                        Excel
+                    </button>
+                </div>
+            </div>
+
+            <button class="preview-btn" id="btnPreview" onclick="launchPreview()" disabled>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                </svg>
+                Interactive Slideshow
+            </button>
+
+        </aside>
+
+        <!-- RIGHT PANEL -->
+        <main class="nx-preview">
+            <div class="preview-header">
+                <h2>Slide Preview</h2>
+                <span class="slide-counter" id="slideCounter">0 slides</span>
+            </div>
+
+            <div class="slides-scroll" id="slidesScroll">
+                <div class="empty-state" id="emptyState">
+                    <div class="e-icon">🎨</div>
+                    <h3>No Slides Yet</h3>
+                    <p>Enter a topic in the prompt area and click Generate to create your presentation with AI.</p>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <div class="status-dot"></div>
+                <span id="statusText">Ready — Orbian Document Engine v4.0</span>
+            </div>
+        </main>
+
+    </div>
+
+    <div class="nx-footer">ORBIAN DOCUMENT STUDIO // HIMANSHU RAJ</div>
+
+    <script>
+        // ── State & Config ─────────────────────────────────────────────
+        let currentData = null;
+        const DEFAULT_GEMINI_KEY = 'AIzaSyCOuBh899glREfCJ-mPrPnNNMEtLAVJdy0';
+
+        // Load API key from localStorage or use default
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('orbian_gemini_key') || '';
+            const keyInput = document.getElementById('apiKeyInput');
+
+            if (saved) {
+                keyInput.value = saved;
+            } else {
+                // Pre-fill with user's provided default key
+                keyInput.value = DEFAULT_GEMINI_KEY;
+                setStatus('Ready — Using pre-configured Gemini API Key');
+            }
+        });
+
+        // ── Generate via Gemini ─────────────────────────────────────────
+        async function generatePresentation() {
+            const prompt = document.getElementById('promptInput').value.trim();
+            let apiKey = document.getElementById('apiKeyInput').value.trim();
+            const slides = parseInt(document.getElementById('slideCount').value) || 5;
+
+            if (!prompt) { alert('Please enter a topic or prompt.'); return; }
+
+            // Fallback to default if empty
+            if (!apiKey) {
+                apiKey = DEFAULT_GEMINI_KEY;
+                document.getElementById('apiKeyInput').value = apiKey;
+            }
+
+            // Save key
+            localStorage.setItem('orbian_gemini_key', apiKey);
+
+            const btn = document.getElementById('generateBtn');
+            btn.classList.add('loading'); btn.disabled = true;
+            setStatus('Generating with Gemini 2.5 Flash...');
+
+            const systemPrompt = `You are an expert presentation designer. Given a topic, generate a structured presentation.
+IMPORTANT: You MUST respond ONLY with valid JSON. No markdown, no explanation, no code blocks — pure JSON only.
+Use EXACTLY this JSON structure:
+{
+  "title": "Presentation Title",
+  "subtitle": "Subtitle or tagline",
+  "slides": [
+    { "title": "Slide Title", "content": ["Point 1", "Point 2", "Point 3"] }
+  ]
+}
+Generate exactly ${slides} content slides. Each slide must have 3-5 concise bullet points. Make content informative and professional.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                parts: [{ text: systemPrompt + "\n\nTopic: " + prompt }]
+                            }
+                        ],
+                        generationConfig: {
+                            response_mime_type: "application/json",
+                            temperature: 0.7,
+                            max_output_tokens: 4096
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error?.message || `HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+                // Parse JSON (Groq json_object mode guarantees valid JSON)
+                let parsed;
+                try {
+                    parsed = JSON.parse(rawText);
+                } catch {
+                    const m = rawText.match(/\{[\s\S]*\}/);
+                    if (!m) throw new Error('Could not parse AI response as JSON. Try again.');
+                    parsed = JSON.parse(m[0]);
+                }
+
+                currentData = parsed;
+                renderSlides(currentData);
+                enableExports();
+                setStatus(`Generated: "${currentData.title}" — ${currentData.slides.length} slides`);
+
+            } catch (err) {
+                console.error(err);
+                alert('Error: ' + err.message);
+                setStatus('Error — ' + err.message);
+            } finally {
+                btn.classList.remove('loading'); btn.disabled = false;
+            }
+        }
+
+        // ── Render slides preview ──────────────────────────────────────
+        function renderSlides(data) {
+            const container = document.getElementById('slidesScroll');
+            const empty = document.getElementById('emptyState');
+            if (empty) empty.remove();
+
+            // Clear old slides
+            container.querySelectorAll('.title-card, .slide-card').forEach(el => el.remove());
+
+            // Title slide
+            const titleCard = document.createElement('div');
+            titleCard.className = 'title-card';
+            titleCard.innerHTML = `
+            <h1>${escHtml(data.title)}</h1>
+            <p>${escHtml(data.subtitle || 'Generated by Orbian AI')}</p>
+        `;
+            container.appendChild(titleCard);
+
+            // Content slides
+            (data.slides || []).forEach((slide, i) => {
+                const card = document.createElement('div');
+                card.className = 'slide-card';
+                card.style.animationDelay = `${(i + 1) * 0.05}s`;
+
+                const content = Array.isArray(slide.content)
+                    ? slide.content
+                    : (slide.content ? [slide.content] : []);
+
+                const points = content.map(p =>
+                    `<div class="slide-point">${escHtml(p)}</div>`
+                ).join('');
+
+                card.innerHTML = `
+                <div class="slide-header-bar">
+                    <div class="slide-num">${i + 1}</div>
+                    <div class="slide-title-text">${escHtml(slide.title)}</div>
+                </div>
+                <div class="slide-body">${points || '<div class="slide-point" style="opacity:0.4">No content</div>'}</div>
+            `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('slideCounter').textContent =
+                `${data.slides.length} slide${data.slides.length !== 1 ? 's' : ''}`;
+
+            container.scrollTop = 0;
+        }
+
+        // ── Enable export buttons ──────────────────────────────────────
+        function enableExports() {
+            ['btnPptx', 'btnPdf', 'btnDocx', 'btnXlsx', 'btnPreview'].forEach(id => {
+                document.getElementById(id).disabled = false;
+            });
+        }
+
+        // ── Export ────────────────────────────────────────────────────
+        async function doExport(fmt) {
+            if (!currentData) return;
+
+            const theme = document.getElementById('themeSelect').value;
+            const dataToExport = { ...currentData, theme: theme };
+
+            const btn = document.getElementById('btn' + fmt.charAt(0).toUpperCase() + fmt.slice(1));
+            const orig = btn.innerHTML;
+            btn.textContent = 'Generating...'; btn.disabled = true;
+            setStatus(`Generating ${fmt.toUpperCase()} (${theme} theme)...`);
+            try {
+                if (!window.docExporter) throw new Error('Export module not loaded — refresh page');
+                await window.docExporter.export(fmt, dataToExport);
+                setStatus(`✓ ${fmt.toUpperCase()} (${theme}) downloaded successfully`);
+                btn.textContent = '✓ Done!';
+                setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2500);
+            } catch (err) {
+                console.error(err);
+                alert('Export failed: ' + err.message);
+                btn.innerHTML = orig; btn.disabled = false;
+                setStatus('Export error — ' + err.message);
+            }
+        }
+
+        // ── Preview ───────────────────────────────────────────────────
+        function launchPreview() {
+            if (!currentData || !window.webPresentation) {
+                alert('Web presentation module not loaded.');
+                return;
+            }
+            const theme = document.getElementById('themeSelect').value;
+            window.webPresentation.launch({ ...currentData, theme: theme });
+        }
+
+        function updatePreviewTheme() {
+            const theme = document.getElementById('themeSelect').value;
+            const colors = {
+                orbian: { p: '#6366f1', s: '#a855f7' },
+                emerald: { p: '#10b981', s: '#059669' },
+                rose: { p: '#e11d48', s: '#be123c' },
+                midnight: { p: '#94a3b8', s: '#64748b' },
+                amber: { p: '#f59e0b', s: '#d97706' }
+            };
+            const c = colors[theme] || colors.orbian;
+            document.documentElement.style.setProperty('--p', c.p);
+            document.documentElement.style.setProperty('--s', c.s);
+            setStatus(`Theme changed to: ${theme}`);
+        }
+
+        // ── Helpers ───────────────────────────────────────────────────
+        function setStatus(msg) {
+            document.getElementById('statusText').textContent = msg;
+        }
+
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        // Allow Ctrl+Enter to generate
+        document.getElementById('promptInput').addEventListener('keydown', e => {
+            if (e.ctrlKey && e.key === 'Enter') generatePresentation();
+        });
+    </script>
+</body>
+
+</html>

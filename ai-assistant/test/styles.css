@@ -1,0 +1,216 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap');
+
+:root {
+    /* Default Theme (Tech Blue) */
+    --primary-color: #6366f1;
+    --primary-light: #818cf8;
+    --primary-glow: rgba(99, 102, 241, 0.4);
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+
+    /* Background Gradients (Dynamic) */
+    --gradient-start: #0f172a;
+    --gradient-end: #1e293b;
+    --accent-mesh: #6366f1;
+
+    --transition: all 0.3s ease;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+
+    /* Dynamic Background with Transition */
+    background: radial-gradient(circle at 10% 20%,
+            var(--accent-mesh) 0%,
+            transparent 40%),
+        radial-gradient(circle at 90% 80%,
+            var(--primary-glow) 0%,
+            transparent 40%),
+        linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+
+    background-size: 200% 200%;
+    /* For subtle animation if needed */
+    transition: background 1.5s ease-in-out, --accent-mesh 1.5s ease;
+}
+
+/* Theme Classes - Moods */
+body.theme-tech {
+    --primary-color: #6366f1;
+    /* Indigo */
+    --primary-glow: rgba(99, 102, 241, 0.4);
+    --gradient-start: #0f172a;
+    --gradient-end: #1e293b;
+    --accent-mesh: #4f46e5;
+}
+
+body.theme-happy {
+    --primary-color: #10b981;
+    /* Emerald */
+    --primary-glow: rgba(16, 185, 129, 0.4);
+    --gradient-start: #064e3b;
+    --gradient-end: #065f46;
+    --accent-mesh: #34d399;
+}
+
+body.theme-angry {
+    --primary-color: #ef4444;
+    /* Red */
+    --primary-glow: rgba(239, 68, 68, 0.4);
+    --gradient-start: #450a0a;
+    --gradient-end: #7f1d1d;
+    --accent-mesh: #f87171;
+}
+
+body.theme-creative {
+    --primary-color: #d946ef;
+    /* Fuchsia */
+    --primary-glow: rgba(217, 70, 239, 0.4);
+    --gradient-start: #4a044e;
+    --gradient-end: #701a75;
+    --accent-mesh: #e879f9;
+}
+
+
+/* App Container */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Header */
+.chat-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.control-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-secondary);
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.control-btn.active {
+    background: var(--text-primary);
+    color: #000;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    border-color: var(--text-primary);
+}
+
+/* Chat Area */
+.chat-area {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message {
+    padding: 12px 18px;
+    border-radius: 12px;
+    max-width: 80%;
+    line-height: 1.5;
+    animation: fadeIn 0.3s ease;
+}
+
+.message.user {
+    background: var(--primary-color);
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 12px var(--primary-glow);
+    transition: background 0.5s ease;
+}
+
+.message.system {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Input Area */
+.input-area {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.8);
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+}
+
+input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
+    font-family: inherit;
+    outline: none;
+}
+
+input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+button#sendBtn {
+    padding: 0 20px;
+    background: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.status-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    text-align: center;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

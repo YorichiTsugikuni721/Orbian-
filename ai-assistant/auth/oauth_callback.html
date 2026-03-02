@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authenticating...</title>
+    <link rel="icon" type="image/png" href="../logo.png?v=6">
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #6366f1;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loader"></div>
+    <p>Authenticating with Google...</p>
+
+    <script>
+        // Parse Hash parameters (Google returns token in hash)
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
+        const idToken = params.get('id_token');
+        const error = params.get('error');
+
+        if (accessToken || idToken) {
+            // Success: Send token to parent
+            if (window.opener) {
+                window.opener.postMessage({
+                    type: 'google_auth_success',
+                    token: accessToken,
+                    id_token: idToken
+                }, window.location.origin);
+                window.close();
+            } else {
+                // Not in popup? Redirect to login with specific param
+                alert('Authentication successful but window.opener not found.');
+                window.location.href = 'login';
+            }
+        } else if (error) {
+            document.body.innerHTML = `<h3>Authentication Failed</h3><p>${error}</p>`;
+        } else {
+            // No token found
+            // Maybe it is a code flow (query params)
+            const query = new URLSearchParams(window.location.search);
+            const code = query.get('code');
+            if (code) {
+                if (window.opener) {
+                    window.opener.postMessage({
+                        type: 'google_auth_code',
+                        code: code
+                    }, window.location.origin);
+                    window.close();
+                }
+            } else {
+                document.body.innerHTML = '<h3>Invalid Request</h3><p>No token or code received.</p>';
+            }
+        }
+    </script>
+</body>
+
+</html>

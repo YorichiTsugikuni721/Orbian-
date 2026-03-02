@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbian | Secure Payment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #111827, #000);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-glow:focus {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center p-6">
+
+    <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+
+        <!-- Left Side: Order Summary -->
+        <div class="flex flex-col justify-center space-y-8 p-4">
+            <div>
+                <a href="/"
+                    class="inline-flex items-center gap-2 text-blue-400 font-bold mb-6 hover:text-blue-300 transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Home
+                </a>
+                <h1 class="text-4xl font-black tracking-tight font-montserrat uppercase">Orbian<span
+                        class="text-gray-500 font-light">.PRO</span></h1>
+                <p class="text-gray-400 mt-2">Elevate your intelligence with the ultimate toolkit.</p>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-400">Selected Plan</span>
+                    <span class="font-bold">Professional</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-400">Billing Cycle</span>
+                    <span class="font-bold">Monthly</span>
+                </div>
+                <div class="h-px bg-white/10 my-4"></div>
+                <div class="flex justify-between items-end">
+                    <span class="text-xl font-medium">Total Amount</span>
+                    <div class="text-right">
+                        <div class="text-3xl font-black text-blue-400">₹199</div>
+                        <div class="text-xs text-gray-500 italic">Inclusive of all taxes</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4 text-sm text-gray-400">
+                <div class="flex gap-3">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-green-500"></i>
+                    <span>256-bit SSL Secure Encryption</span>
+                </div>
+                <div class="flex gap-3">
+                    <i data-lucide="zap" class="w-5 h-5 text-blue-500"></i>
+                    <span>Instant activation of Pro Features</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Payment Form -->
+        <div class="glass-card p-8 rounded-[40px] relative overflow-hidden">
+            <!-- Decorative Glow -->
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-600/20 rounded-full blur-[80px]"></div>
+
+            <div class="relative z-10">
+                <h2 class="text-2xl font-bold mb-6">Complete Payment</h2>
+
+                <!-- Payment Method Tabs -->
+                <div class="flex gap-4 mb-8">
+                    <button id="cardTab"
+                        class="flex-1 py-3 px-4 rounded-xl border border-blue-600 bg-blue-600/10 text-sm font-bold flex items-center justify-center gap-2 transition outline-none">
+                        <i data-lucide="credit-card" class="w-4 h-4"></i> Card
+                    </button>
+                    <button id="upiTab"
+                        class="flex-1 py-3 px-4 rounded-xl border border-white/10 hover:border-white/30 text-sm font-bold flex items-center justify-center gap-2 transition outline-none text-gray-400">
+                        <i data-lucide="smartphone" class="w-4 h-4"></i> UPI / QR
+                    </button>
+                </div>
+
+                <!-- Card Form -->
+                <form id="paymentForm" class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Cardholder Name</label>
+                        <input type="text" placeholder="John Doe"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none input-glow transition">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Card Number</label>
+                        <div class="relative">
+                            <input type="text" placeholder="•••• •••• •••• ••••"
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none input-glow transition">
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
+                                    class="h-3 opacity-50">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
+                                    class="h-4 opacity-50">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">Expiry</label>
+                            <input type="text" placeholder="MM/YY"
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none input-glow transition">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest">CVV</label>
+                            <input type="password" placeholder="•••"
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none input-glow transition text-center font-black">
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-blue-900/40 transition transform active:scale-95 mt-4">
+                        Pay ₹199 Securely
+                    </button>
+                </form>
+
+                <!-- UPI Section -->
+                <div id="upiSection" class="hidden space-y-6 text-center animate-in fade-in duration-300">
+                    <div class="bg-white p-4 rounded-2xl inline-block shadow-2xl">
+                        <!-- REAL DYNAMIC QR CODE -->
+                        <img id="qrCode"
+                            src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=orbian.ai@upi%26pn=OrbianAI%26am=199%26cu=INR"
+                            alt="UPI QR Code" class="w-48 h-48 mx-auto">
+                    </div>
+                    <p class="text-sm text-gray-400">Scan this QR with any UPI app to pay ₹199</p>
+
+                    <div class="space-y-4">
+                        <div
+                            class="bg-white/5 border border-white/10 p-4 rounded-xl flex justify-between items-center text-left">
+                            <div>
+                                <span class="text-[10px] text-gray-500 uppercase block">Merchant UPI ID</span>
+                                <span class="font-bold text-blue-400">orbian.ai@upi</span>
+                            </div>
+                            <button onclick="navigator.clipboard.writeText('orbian.ai@upi')"
+                                class="p-2 hover:bg-white/10 rounded-lg transition"><i data-lucide="copy"
+                                    class="w-4 h-4 text-gray-400"></i></button>
+                        </div>
+
+                        <!-- Manual Verification -->
+                        <div class="space-y-2 text-left">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Transaction UTR
+                                / Ref No.</label>
+                            <input type="text" id="utrInput" placeholder="Enter 12-digit UTR Number"
+                                class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none input-glow transition text-sm">
+                            <button id="verifyUpiBtn"
+                                class="w-full py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold uppercase tracking-widest transition">
+                                Verify Transaction
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center text-xs text-gray-500">
+                    Secure 256-bit encrypted checkout.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Razorpay Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        lucide.createIcons();
+
+        const cardTab = document.getElementById('cardTab');
+        const upiTab = document.getElementById('upiTab');
+        const paymentForm = document.getElementById('paymentForm');
+        const upiSection = document.getElementById('upiSection');
+
+        cardTab.addEventListener('click', () => {
+            cardTab.classList.add('border-blue-600', 'bg-blue-600/10');
+            cardTab.classList.remove('border-white/10', 'text-gray-400');
+            upiTab.classList.remove('border-blue-600', 'bg-blue-600/10');
+            upiTab.classList.add('border-white/10', 'text-gray-400');
+            paymentForm.classList.remove('hidden');
+            upiSection.classList.add('hidden');
+        });
+
+        upiTab.addEventListener('click', () => {
+            upiTab.classList.add('border-blue-600', 'bg-blue-600/10');
+            upiTab.classList.remove('border-white/10', 'text-gray-400');
+            upiTab.style.color = '#fff';
+            cardTab.classList.remove('border-blue-600', 'bg-blue-600/10');
+            cardTab.classList.add('border-white/10', 'text-gray-400');
+            paymentForm.classList.add('hidden');
+            upiSection.classList.remove('hidden');
+        });
+
+        // Razorpay Integration
+        paymentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // NOTE: Add your real Razorpay Key ID here
+            const options = {
+                "key": "rzp_test_YOUR_KEY_HERE",
+                "amount": "19900", // Amount in paise
+                "currency": "INR",
+                "name": "Orbian AI",
+                "description": "Professional Plan - 1 Month",
+                "image": "logo.svg",
+                "handler": function (response) {
+                    // This runs after successful payment
+                    console.log("Payment ID:", response.razorpay_payment_id);
+                    upgradeUser();
+                },
+                "prefill": {
+                    "name": "User",
+                    "email": "user@example.com",
+                    "contact": "9999999999"
+                },
+                "theme": { "color": "#2563eb" }
+            };
+
+            const rzp1 = new Razorpay(options);
+            rzp1.on('payment.failed', function (response) {
+                alert("Payment Failed: " + response.error.description);
+            });
+            rzp1.open();
+        });
+
+        document.getElementById('verifyUpiBtn').addEventListener('click', () => {
+            const utr = document.getElementById('utrInput').value;
+            if (utr.length < 10) {
+                alert("Please enter a valid Transaction Ref/UTR number.");
+                return;
+            }
+            alert("Transaction received! Verifying with bank... Your account will be upgraded within 10 minutes.");
+            // In a real app, this sends the UTR to your backend/DB
+            upgradeUser();
+        });
+
+        function upgradeUser() {
+            const user = JSON.parse(localStorage.getItem('ai_assistant_user') || '{}');
+            user.plan = 'pro';
+            localStorage.setItem('ai_assistant_user', JSON.stringify(user));
+            window.location.href = 'app';
+        }
+    </script>
+</body>
+
+</html>

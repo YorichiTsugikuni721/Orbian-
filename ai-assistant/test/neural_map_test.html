@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="widthdevice-width, initial-scale=1.0">
+    <title>Neural Map Pro | Orbian AI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --orbian-primary: #8b5cf6;
+            --orbian-secondary: #06b6d4;
+            --orbian-bg: #03040b;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--orbian-bg);
+            color: #fff;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+        }
+
+        #neuralMapContainer {
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 1;
+        }
+
+        /* --- UI OVERLAY --- */
+        .ui-container {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 50px;
+            background: radial-gradient(circle at center, transparent 0%, rgba(3, 4, 11, 0.5) 100%);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: -2px;
+            background: linear-gradient(to right, #fff, var(--orbian-primary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .header p {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            pointer-events: auto;
+        }
+
+        .orbian-btn {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 12px 28px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .orbian-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .orbian-btn:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: var(--orbian-primary);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .orbian-btn:hover::before {
+            left: 100%;
+        }
+
+        .stat-box {
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            text-align: right;
+        }
+
+        .stat-val {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--orbian-secondary);
+        }
+
+        .stat-label {
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="neuralMapContainer"></div>
+
+    <div class="ui-container">
+        <div class="header">
+            <h1>Orbian Neural Engine</h1>
+            <p>Cognitive Synapse Visualization v2.5</p>
+        </div>
+
+        <div class="stat-box">
+            <div class="stat-val" id="nodeCount">24</div>
+            <div class="stat-label">Active Neural Nodes</div>
+        </div>
+
+        <div class="controls">
+            <button class="orbian-btn" id="injectNode">Inject Intelligence</button>
+            <button class="orbian-btn" id="resetMap">Purge Matrix</button>
+        </div>
+    </div>
+
+    <script>
+        class NeuralMapPro {
+            constructor() {
+                this.container = document.getElementById('neuralMapContainer');
+                this.nodes = [];
+                this.connections = [];
+                this.nodeGroup = new THREE.Group();
+                this.init();
+                this.addEnvironment();
+                this.animate();
+            }
+
+            init() {
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 2000);
+                this.camera.position.z = 150;
+
+                this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(window.devicePixelRatio);
+                this.container.appendChild(this.renderer.domElement);
+
+                this.scene.add(this.nodeGroup);
+
+                // Initial Node Burst
+                for (let i = 0; i < 24; i++) this.createNode();
+
+                window.addEventListener('resize', () => {
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            }
+
+            addEnvironment() {
+                // Starfield Background
+                const starGeometry = new THREE.BufferGeometry();
+                const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, transparent: true, opacity: 0.5 });
+                const starVertices = [];
+                for (let i = 0; i < 5000; i++) {
+                    starVertices.push((Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 2000, (Math.random() - 0.5) * 2000);
+                }
+                starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+                const stars = new THREE.Points(starGeometry, starMaterial);
+                this.scene.add(stars);
+            }
+
+            createNode() {
+                const colors = [0x8b5cf6, 0x06b6d4, 0xec4899];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+
+                // Outer Glow Sphere
+                const geometry = new THREE.SphereGeometry(1.2, 24, 24);
+                const material = new THREE.MeshBasicMaterial({
+                    color: color,
+                    transparent: true,
+                    opacity: 0.9
+                });
+                const node = new THREE.Mesh(geometry, material);
+
+                // Inner Bright Point
+                const innerGeom = new THREE.SphereGeometry(0.4, 12, 12);
+                const innerMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                const inner = new THREE.Mesh(innerGeom, innerMat);
+                node.add(inner);
+
+                node.position.set(
+                    (Math.random() - 0.5) * 140,
+                    (Math.random() - 0.5) * 100,
+                    (Math.random() - 0.5) * 80
+                );
+
+                this.nodes.push(node);
+                this.nodeGroup.add(node);
+
+                // Dynamic Re-connection
+                this.refreshConnections();
+                document.getElementById('nodeCount').textContent = this.nodes.length;
+            }
+
+            refreshConnections() {
+                // Clear old lines for simplicity in this demo re-render
+                this.connections.forEach(line => this.nodeGroup.remove(line));
+                this.connections = [];
+
+                const lineMaterial = new THREE.LineBasicMaterial({
+                    color: 0x8b5cf6,
+                    transparent: true,
+                    opacity: 0.15
+                });
+
+                for (let i = 0; i < this.nodes.length; i++) {
+                    for (let j = i + 1; j < this.nodes.length; j++) {
+                        const dist = this.nodes[i].position.distanceTo(this.nodes[j].position);
+                        if (dist < 45) {
+                            const points = [this.nodes[i].position, this.nodes[j].position];
+                            const geom = new THREE.BufferGeometry().setFromPoints(points);
+                            const line = new THREE.Line(geom, lineMaterial);
+                            this.nodeGroup.add(line);
+                            this.connections.push(line);
+                        }
+                    }
+                }
+            }
+
+            reset() {
+                this.nodeGroup.clear();
+                this.nodes = [];
+                this.connections = [];
+                for (let i = 0; i < 24; i++) this.createNode();
+            }
+
+            animate() {
+                requestAnimationFrame(() => this.animate());
+
+                // Smooth Floating Motion
+                this.nodes.forEach((node, i) => {
+                    node.position.y += Math.sin(Date.now() * 0.001 + i) * 0.05;
+                    node.position.x += Math.cos(Date.now() * 0.001 + i) * 0.03;
+                });
+
+                this.nodeGroup.rotation.y += 0.001;
+                this.nodeGroup.rotation.z += 0.0005;
+
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+
+        const engine = new NeuralMapPro();
+
+        document.getElementById('injectNode').addEventListener('click', () => {
+            engine.createNode();
+        });
+
+        document.getElementById('resetMap').addEventListener('click', () => {
+            engine.reset();
+        });
+    </script>
+</body>
+
+</html>

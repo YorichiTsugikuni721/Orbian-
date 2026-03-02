@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbian | Developer Portal</title>
+    <link rel="icon" type="image/png" href="logo.png?v=6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        header img {
+            width: 50px;
+            height: 50px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #6366f1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-dim);
+            margin-top: 5px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        input {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .app-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .app-item h3 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .credential {
+            background: #000;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #10b981;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            background: #10b981;
+            color: white;
+            transform: translateY(100px);
+            transition: 0.5s;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .nav-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="toast" class="toast">Action Successful!</div>
+
+    <div class="container">
+        <a href="app" class="nav-link">← Back to Dashboard</a>
+        <header>
+            <img src="logo.png?v=6" alt="Orbian">
+            <div>
+                <h1>Orbian Developer Portal</h1>
+                <p class="subtitle">Build and register apps to use Orbian Identity Provider.</p>
+            </div>
+        </header>
+
+        <div class="card">
+            <h2>Register New Application</h2>
+            <div class="form-group">
+                <label>Application Name</label>
+                <input type="text" id="appName" placeholder="e.g. My Awesome Dashboard">
+            </div>
+            <div class="form-group">
+                <label>Redirect URI</label>
+                <input type="text" id="redirectUri" placeholder="http://localhost:3000/callback">
+            </div>
+            <button class="btn" onclick="registerApp()">Create Application</button>
+        </div>
+
+        <div class="card">
+            <h2>Your Applications</h2>
+            <div id="appList">
+                <p style="color: var(--text-dim); text-align: center;">You haven't registered any apps yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FLASK_URL = 'http://localhost:5001';
+        const user = JSON.parse(localStorage.getItem('ai_assistant_user'));
+
+        if (!user) {
+            window.location.href = 'auth/login';
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        async function registerApp() {
+            const name = document.getElementById('appName').value;
+            const uri = document.getElementById('redirectUri').value;
+
+            if (!name || !uri) return alert("Please fill all fields");
+
+            try {
+                const res = await fetch(`${FLASK_URL}/api/orbian/register-app`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: user.id,
+                        app_name: name,
+                        redirect_uri: uri
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast("Application Registered Successfully!");
+                    document.getElementById('appName').value = '';
+                    document.getElementById('redirectUri').value = '';
+                    addAppToList(name, data.credentials);
+                }
+            } catch (e) {
+                showToast("Server Error");
+            }
+        }
+
+        function addAppToList(name, creds) {
+            const list = document.getElementById('appList');
+            if (list.querySelector('p')) list.innerHTML = '';
+
+            const item = document.createElement('div');
+            item.className = 'app-item';
+            item.innerHTML = `
+                <h3>${name}</h3>
+                <label>Client ID</label>
+                <div class="credential">
+                    <span>${creds.client_id}</span>
+                </div>
+                <label style="margin-top:10px">Client Secret</label>
+                <div class="credential" style="color: #f87171">
+                    <span>${creds.client_secret}</span>
+                </div>
+            `;
+            list.prepend(item);
+        }
+    </script>
+</body>
+
+</html>

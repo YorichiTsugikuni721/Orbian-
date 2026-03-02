@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbian | Forge Playground</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="logo.png?v=6">
+    <link rel="icon" type="image/png" sizes="192x192" href="logo.png?v=6">
+    <link rel="apple-touch-icon" href="logo.png?v=6">
+    <link rel="stylesheet" href="styles.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-w: 400px;
+            --header-h: 60px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #03050a;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header */
+        .forge-header {
+            height: var(--header-h);
+            background: rgba(10, 12, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 100;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: var(--primary-light);
+        }
+
+        .status-chip {
+            padding: 4px 12px;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #00f2ff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Main Split Container */
+        .forge-container {
+            flex: 1;
+            display: flex;
+            height: calc(100vh - var(--header-h));
+            position: relative;
+        }
+
+        /* Chat Panel (Left) */
+        .chat-panel {
+            width: var(--sidebar-w);
+            background: #05070a;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: width 0.3s ease;
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Premium Chat Input */
+        .chat-input-area {
+            padding: 20px;
+            background: rgba(10, 12, 20, 0.9);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .input-wrapper {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #7000ff;
+            box-shadow: 0 0 20px rgba(112, 0, 255, 0.2);
+        }
+
+        #user-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            resize: none;
+            min-height: 40px;
+            max-height: 150px;
+        }
+
+        .input-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .forge-btn {
+            background: linear-gradient(135deg, #7000ff, #00f2ff);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            padding: 8px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .forge-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Preview Panel (Right) */
+        .preview-panel {
+            flex: 1;
+            background: #000;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-toolbar {
+            height: 40px;
+            background: #0a0c14;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            gap: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .toolbar-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .preview-frame-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+            /* Default to white for web preview */
+        }
+
+        /* Message Bubbles */
+        .msg {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #7000ff 0%, #00f2ff 100%);
+            border: none;
+            box-shadow: 0 4px 15px rgba(112, 0, 255, 0.2);
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg.ai {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 4px;
+            color: #e2e8f0;
+        }
+
+        /* Loading Dots Animation */
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+            padding: 10px 15px;
+            width: fit-content;
+        }
+
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            background: #00f2ff;
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: dotFade 1.4s infinite ease-in-out;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes dotFade {
+
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+
+        /* Code Block Styling in Chat */
+        pre {
+            background: #0d1117;
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #d1d5db;
+        }
+
+        /* Overlay Loader */
+        .forge-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 242, 255, 0.1);
+            border-top: 4px solid #00f2ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="forge-header">
+        <div class="logo-box">
+            <img src="logo.png?v=6" alt="Orbian Logo" width="32" height="32">
+            ORBIAN FORGE
+        </div>
+        <div class="status-chip">
+            <div class="spinner" style="width:10px; height:10px; border-width:2px;"></div>
+            SMART ENGINE: TRINITY + QWEN
+        </div>
+    </header>
+
+    <main class="forge-container">
+        <!-- Sidebar Chat -->
+        <section class="chat-panel">
+            <div class="chat-header">
+                <span>💬 AI Architect</span>
+            </div>
+
+            <div id="chat-messages">
+                <div class="msg ai">Welcome to the Orbian Forge. What should we build today? I'll handle the code and
+                    show you a live preview here.</div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="input-wrapper">
+                    <textarea id="user-input" placeholder="Describe your UI or Web App..."></textarea>
+                    <div class="input-actions">
+                        <button class="forge-btn" id="send-btn">Generate</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Preview -->
+        <section class="preview-panel">
+            <div class="preview-toolbar">
+                <div class="toolbar-dot" style="background: #ff5f56;"></div>
+                <div class="toolbar-dot" style="background: #ffbd2e;"></div>
+                <div class="toolbar-dot" style="background: #27c93f;"></div>
+                <span style="font-size: 0.75rem; opacity: 0.5; font-weight: 600; margin-left: auto;">LIVE PREVIEW</span>
+            </div>
+
+            <div class="preview-frame-container">
+                <div class="forge-loader" id="forge-loader">
+                    <div class="spinner"></div>
+                    <div style="font-size: 0.8rem; color: #00f2ff; letter-spacing: 1px;">FORGING CODE...</div>
+                </div>
+                <iframe id="preview-frame"></iframe>
+            </div>
+        </section>
+    </main>
+
+    <script src="playground.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbian | Developer Console</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../logo.png?v=6">
+    <link rel="icon" type="image/png" sizes="192x192" href="../logo.png?v=6">
+    <link rel="apple-touch-icon" href="../logo.png?v=6">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #111827;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="p-10">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="flex justify-between items-center mb-10">
+            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                Orbian Developer Console</h1>
+            <a href="../app" class="text-gray-400 hover:text-white transition">Back to App</a>
+        </header>
+
+        <div class="glass rounded-xl p-8 overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-gray-400 border-b border-gray-700">
+                        <th class="p-4">ID</th>
+                        <th class="p-4">Username</th>
+                        <th class="p-4">Email</th>
+                        <th class="p-4">Status</th>
+                        <th class="p-4">Premium</th>
+                        <th class="p-4">Created At</th>
+                        <th class="p-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable">
+                    <!-- Rows injected here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5001/api/admin';
+
+        // Authorization Check
+        const user = JSON.parse(localStorage.getItem('ai_assistant_user'));
+        if (!user || !user.is_admin) {
+            document.body.innerHTML = `
+                <div class="flex flex-col items-center justify-center min-h-screen text-center p-10">
+                    <h1 class="text-6xl mb-4">🚫</h1>
+                    <h2 class="text-2xl font-bold text-red-500 mb-2">Access Denied</h2>
+                    <p class="text-gray-400">Only authorized developers can access this console.</p>
+                    <a href="../app" class="mt-6 px-6 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition">Go Back</a>
+                </div>
+            `;
+            throw new Error('Unauthorized access attempt');
+        }
+
+        async function fetchUsers() {
+            try {
+                const res = await fetch(`${API_URL}/users`);
+                if (res.status === 401) {
+                    alert('You are not authorized. Please login with a developer account.');
+                    window.location.href = '../auth/login';
+                    return;
+                }
+                const users = await res.json();
+                renderTable(users);
+            } catch (e) {
+                console.error('API Error:', e);
+                alert('Backend not reachable! Make sure Flask is running on port 5001.');
+            }
+        }
+
+        function renderTable(users) {
+            const tbody = document.getElementById('userTable');
+            tbody.innerHTML = users.map(user => `
+                <tr class="border-b border-gray-800 hover:bg-white/5 transition">
+                    <td class="p-4 text-gray-500">#${user.id}</td>
+                    <td class="p-4 font-medium">${user.username}</td>
+                    <td class="p-4 text-gray-400">${user.email}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded text-xs ${user.is_active ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}">
+                            ${user.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded text-xs ${user.is_premium ? 'bg-purple-900 text-purple-300 border border-purple-500' : 'bg-gray-800 text-gray-400'}">
+                            ${user.is_premium ? 'PREMIUM' : 'Free'}
+                        </span>
+                    </td>
+                    <td class="p-4 text-gray-500 text-sm">${new Date(user.created_at).toLocaleDateString()}</td>
+                    <td class="p-4">
+                        <button onclick="togglePremium(${user.id})" 
+                            class="px-3 py-1 rounded text-xs font-bold transition ${user.is_premium ? 'bg-red-600 hover:bg-red-500 text-white' : 'bg-blue-600 hover:bg-blue-500 text-white'}">
+                            ${user.is_premium ? 'Deactivate Premium' : 'Activate Premium'}
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function togglePremium(userId) {
+            if (!confirm(`Are you sure you want to toggle premium for User #${userId}?`)) return;
+
+            try {
+                const res = await fetch(`${API_URL}/toggle_premium`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    // Refresh table
+                    fetchUsers();
+                    // Optional: Show toast
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (e) {
+                alert('Network Error');
+            }
+        }
+
+        // Init
+        fetchUsers();
+    </script>
+</body>
+
+</html>

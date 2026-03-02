@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbian AI — Auth</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../logo.png?v=6">
+    <link rel="icon" type="image/png" sizes="192x192" href="../logo.png?v=6">
+    <link rel="apple-touch-icon" href="../logo.png?v=6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script>
+        // REDIRECT MOBILE USERS TO PREMIUM MOBILE AUTH
+        if (window.innerWidth <= 1050) {
+            window.location.href = 'login-mobile.html';
+        }
+    </script>
+    <link rel="stylesheet" href="auth-style.css?v=2">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+    <div class="auth-card" id="authContainer">
+
+        <!-- LEFT SIDE (WHITE - FORM AREA) -->
+        <div class="side-white">
+            <div class="form-container">
+                <h2 class="form-title">Login</h2>
+                <div class="title-underline"></div>
+
+                <!-- LOGIN FORM -->
+                <form id="loginForm" class="auth-form">
+                    <div class="entry-group">
+                        <div class="entry-wrapper">
+                            <input type="text" id="loginEmail" name="email" placeholder="Username" required
+                                autocomplete="off">
+                            <div id="loginEmailSuggestions" class="email-suggestions hidden"></div>
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="entry-group">
+                        <div class="entry-wrapper">
+                            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+                            <svg class="input-icon toggle-password" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" style="cursor: pointer;"
+                                onclick="togglePasswordVisibility('loginPassword')">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div style="text-align: right; margin-top: 10px;">
+                            <a href="#" id="openForgotBtn"
+                                onclick="document.getElementById('forgotModal').classList.add('active'); return false;"
+                                style="font-size: 13px; color: #666; font-weight: 600; text-decoration: none;">Forgot
+                                password?</a>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="pill-btn primary-action-btn" id="loginBtn">
+                        <span>Login</span>
+                        <div class="btn-loader hidden" id="loginLoader"></div>
+                    </button>
+
+                    <div class="divider-text">or</div>
+
+                    <div class="oauth-row">
+                        <div class="orbian-oauth-btn google-btn-wrapper">
+                            <div id="googleBtn" class="google-overlay"></div>
+                            <svg class="oauth-icon" viewBox="0 0 48 48">
+                                <path fill="#EA4335"
+                                    d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                                <path fill="#4285F4"
+                                    d="M46.91 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.02-10.36 7.02-17.65z" />
+                                <path fill="#FBBC05"
+                                    d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.97-6.19z" />
+                                <path fill="#34A853"
+                                    d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                            </svg>
+                            <span>Continue with Google</span>
+                        </div>
+                    </div>
+
+                    <p class="switch-text">Don't have an account? <a href="javascript:void(0)" id="switchToSignup">Sign
+                            Up</a></p>
+                </form>
+
+                <!-- SIGNUP FORM (Hidden by default) -->
+                <form id="signupForm" class="auth-form hidden">
+                    <div class="entry-group">
+                        <div class="entry-wrapper">
+                            <input type="text" id="signupUsername" name="username" placeholder="Username" required>
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="entry-group">
+                        <div class="entry-wrapper">
+                            <input type="email" id="signupEmail" name="email" placeholder="Email" required
+                                autocomplete="off">
+                            <div id="signupEmailSuggestions" class="email-suggestions hidden"></div>
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                </path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="entry-group">
+                        <div class="entry-wrapper">
+                            <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+                            <svg class="input-icon toggle-password" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" style="cursor: pointer;"
+                                onclick="togglePasswordVisibility('signupPassword')">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                    <button type="submit" class="pill-btn primary-action-btn" id="signupBtn">
+                        <span>Sign Up</span>
+                        <div class="btn-loader hidden" id="signupLoader"></div>
+                    </button>
+
+                    <div class="divider-text">or</div>
+
+                    <div class="oauth-row">
+                        <div class="orbian-oauth-btn google-btn-wrapper">
+                            <div id="googleSignupBtn" class="google-overlay"></div>
+                            <svg class="oauth-icon" viewBox="0 0 48 48">
+                                <path fill="#EA4335"
+                                    d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                                <path fill="#4285F4"
+                                    d="M46.91 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.02-10.36 7.02-17.65z" />
+                                <path fill="#FBBC05"
+                                    d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.97-6.19z" />
+                                <path fill="#34A853"
+                                    d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                            </svg>
+                            <span>Continue with Google</span>
+                        </div>
+                    </div>
+
+                    <p class="switch-text">Already have an account? <a href="javascript:void(0)" id="switchToLogin">Log
+                            In</a></p>
+                </form>
+
+                <!-- FOOTER LINKS -->
+                <div class="footer-links">
+                    Privacy policy · Terms of service
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE (BLACK - WELCOME TEXT) -->
+        <div class="side-black">
+            <div class="side-content">
+                <h1 id="sideHeading">WELCOME<br>BACK!</h1>
+                <p id="sideSubtext">Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti, rem?</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal-overlay" id="forgotModal">
+        <div class="modal-card">
+            <button class="close-modal" id="closeForgotBtn">&times;</button>
+            <div id="forgotStep1">
+                <h3>Forgot Password?</h3>
+                <p>Enter email to receive code.</p>
+                <div class="entry-group">
+                    <div class="entry-wrapper">
+                        <input type="email" id="forgotEmail" placeholder="Email address">
+                    </div>
+                </div>
+                <button class="pill-btn primary-action-btn" id="sendOtpBtn" onclick="sendOTP()">
+                    <span>Send Code</span>
+                    <div class="btn-loader hidden" id="sendOtpLoader"></div>
+                </button>
+            </div>
+
+            <div id="forgotStep2" class="hidden">
+                <h3>Verify OTP</h3>
+                <p>Enter the 6-digit code.</p>
+                <div class="entry-group">
+                    <div class="entry-wrapper">
+                        <input type="text" id="otpInput" placeholder="Enter code" maxLength="6">
+                    </div>
+                </div>
+                <button class="pill-btn primary-action-btn" id="verifyOtpBtn" onclick="verifyOTP()">
+                    <span>Verify Code</span>
+                    <div class="btn-loader hidden" id="verifyOtpLoader"></div>
+                </button>
+            </div>
+
+            <div id="forgotStep3" class="hidden">
+                <h3>New Password</h3>
+                <p>Set a new password.</p>
+                <div class="entry-group">
+                    <div class="entry-wrapper">
+                        <input type="password" id="newPassword" placeholder="New password">
+                    </div>
+                </div>
+                <button class="pill-btn primary-action-btn" id="resetPwdBtn" onclick="resetPassword()">
+                    <span>Reset Password</span>
+                    <div class="btn-loader hidden" id="resetPwdLoader"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script src="auth.js"></script>
+</body>
+
+</html>

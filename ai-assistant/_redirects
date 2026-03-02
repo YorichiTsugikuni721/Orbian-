@@ -1,0 +1,22 @@
+# Netlify configuration for Single Page Applications (SPA) and clean URLs
+
+# App routing (Handles dynamically generated chat IDs like /app/7ga5kct3)
+/app/*       /app.html  200
+
+# Auth Pages
+/auth/login     /auth/login.html  200
+/auth/login-mobile     /auth/login-mobile.html  200
+/auth/signup-mobile    /auth/signup-mobile.html  200
+/auth/account   /auth/account.html  200
+/auth/authorize /auth/authorize.html  200
+
+# Other root pages (Clean URL routing)
+/pricing     /pricing.html  200
+/about       /about.html  200
+/privacy     /privacy.html  200
+/payment     /payment.html  200
+/developer   /developer.html  200
+/ppt-studio  /ppt-studio.html  200
+
+# Fallback for any other 404s (optional)
+/*    /index.html   404

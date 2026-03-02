@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sign Up — Orbian AI</title>
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="savanna-style.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+
+    <div class="auth-wrapper">
+        <!-- Header Tab -->
+        <div class="header-tab">Register</div>
+
+        <!-- Glassmorphism Card -->
+        <div class="auth-card">
+            <form id="signupForm">
+
+                <!-- Username Field -->
+                <div class="input-field">
+                    <input type="text" id="signupUsername" name="username" placeholder=" " required autocomplete="off">
+                    <label class="input-label-tag">Username</label>
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+
+                <!-- Email Field -->
+                <div class="input-field">
+                    <input type="email" id="signupEmail" name="email" placeholder=" " required autocomplete="off">
+                    <label class="input-label-tag">Email Address</label>
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <div id="signupEmailSuggestions" class="email-suggestions hidden"></div>
+                </div>
+
+                <!-- Password Field with Floating Label -->
+                <div class="input-field">
+                    <input type="password" id="signupPassword" name="password" placeholder=" " required>
+                    <label class="input-label-tag">Password</label>
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+
+                <!-- Sign Up Button -->
+                <button type="submit" class="login-btn" id="signupBtn">Sign Up</button>
+                <div class="loader hidden" id="signupLoader"></div>
+
+                <div class="divider">Or register with</div>
+
+                <div class="oauth-buttons">
+                    <button type="button" class="oauth-btn" id="googleSignupBtnWrapper">
+                        <div id="googleSignupBtn"
+                            style="position: absolute; opacity: 0; width: 100%; height: 100%; top: 0; left: 0; z-index: 10;">
+                        </div>
+                        <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google">
+                        <span style="font-family: inherit;">Continue with Google</span>
+                    </button>
+                </div>
+
+                <!-- Login Switch -->
+                <div class="switch-text">
+                    Already have an account? <a href="login">Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script src="auth.js"></script>
+</body>
+
+</html>

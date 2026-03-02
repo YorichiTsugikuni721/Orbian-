@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorize Access — Orbian</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="../logo.png?v=6">
+    <link rel="icon" type="image/png" sizes="192x192" href="../logo.png?v=6">
+    <link rel="apple-touch-icon" href="../logo.png?v=6">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --orbian-bg: #000000;
+            --orbian-card: rgba(255, 255, 255, 0.03);
+            --orbian-border: rgba(255, 255, 255, 0.1);
+            --orbian-accent: #ffffff;
+            --orbian-text: #ffffff;
+            --orbian-text-dim: rgba(255, 255, 255, 0.6);
+        }
+
+        body {
+            background: var(--orbian-bg);
+            color: var(--orbian-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Architect Mesh Background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .auth-card {
+            background: var(--orbian-card);
+            backdrop-filter: blur(20px);
+            padding: 50px 40px;
+            border: 1px solid var(--orbian-border);
+            text-align: center;
+            max-width: 440px;
+            width: 90%;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            /* Wedge Cut Architect Style */
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 30px 100%, 0 calc(100% - 30px));
+            transition: transform 0.4s ease;
+        }
+
+        .logo-container {
+            position: relative;
+            margin-bottom: 35px;
+            display: inline-block;
+        }
+
+        .logo {
+            width: 70px;
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
+            animation: architectPulse 3s infinite ease-in-out;
+        }
+
+        @keyframes architectPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                filter: brightness(1) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
+            }
+
+            50% {
+                transform: scale(1.05);
+                filter: brightness(1.2) drop-shadow(0 0 25px rgba(255, 255, 255, 0.4));
+            }
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+
+        .description {
+            color: var(--orbian-text-dim);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .app-highlight {
+            color: #ffffff;
+            font-weight: 800;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            outline: none;
+        }
+
+        .btn-allow {
+            background: #ffffff;
+            color: #000000;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+        }
+
+        .btn-allow:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+            background: #f0f0f0;
+        }
+
+        .btn-deny {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--orbian-text-dim);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+        }
+
+        .btn-deny:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Status Banner */
+        .status-tag {
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fbbf24;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* Success Message Styling */
+        .success-text {
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        /* Loader Animation */
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Account Selector Styles */
+        .account-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            max-height: 240px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .account-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .account-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .account-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+        }
+
+        .account-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .account-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #333, #111);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .account-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .account-email {
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .account-name {
+            font-size: 11px;
+            color: var(--orbian-text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin: 0 auto 25px;
+            width: fit-content;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .user-chip:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-card">
+        <div class="logo-container">
+            <img src="../logo.png?v=6" class="logo" alt="Orbian">
+        </div>
+
+        <div id="authContent">
+            <div class="user-chip" onclick="showAccountSelector()" title="Switch account">
+                <span id="currentUserEmail">...</span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <path d="M6 9l6 6 6-6"></path>
+                </svg>
+            </div>
+            <span class="status-tag">Authorization Required</span>
+            <h1>Link Application</h1>
+            <p class="description">
+                <span class="app-highlight" id="appName">Loading...</span> wants to securely access your Orbian profile.
+                This allows the application to read your identity and preference data.
+            </p>
+
+            <div class="btn-group">
+                <button class="btn btn-allow" id="allowBtn" onclick="authorize()">
+                    <span>Grant Authorization</span>
+                </button>
+                <button class="btn btn-deny" onclick="window.close()">Decline Access</button>
+            </div>
+        </div>
+
+        <!-- Account Selector -->
+        <div id="accountSelector" class="hidden">
+            <span class="status-tag">Secure Orbian Hub</span>
+            <h1>Select Account</h1>
+            <p class="description" style="margin-bottom: 20px;">Choose an identity to continue with <span
+                    class="app-highlight" id="appNameAlt">...</span></p>
+            <div id="accountList" class="account-list">
+                <!-- Accounts will be injected here -->
+            </div>
+            <div class="btn-group" style="margin-top: 20px;">
+                <button class="btn btn-deny" onclick="goToLogin()">Use another account</button>
+                <button class="btn btn-deny" onclick="hideAccountSelector()">Back</button>
+            </div>
+        </div>
+
+        <!-- Redirecting Message -->
+        <div id="redirectingState" class="hidden">
+            <div class="loader"></div>
+            <p class="description" style="margin-top: 20px;">Synchronizing Orbian Identity...</p>
+        </div>
+
+        <!-- Login Required Message -->
+        <div id="loginRequired" class="hidden">
+            <span class="status-tag" style="color: #f87171;">Session Inactive</span>
+            <h1>Secure Login</h1>
+            <p class="description">Your Orbian session has expired or is inactive. You must login to authorize this
+                action.</p>
+            <div class="btn-group">
+                <button class="btn btn-allow" onclick="goToLogin()">Continue to Login</button>
+                <button class="btn btn-deny" onclick="window.close()">Cancel Request</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FLASK_URL = 'http://localhost:5001';
+
+        // Navigation Functions
+        window.goToLogin = function () {
+            const backUrl = encodeURIComponent(window.location.href);
+            window.location.href = `./login?redirect=${backUrl}`;
+        };
+
+        window.hideAccountSelector = function () {
+            const user = JSON.parse(localStorage.getItem('ai_assistant_user'));
+            if (!user) {
+                document.getElementById('loginRequired').classList.remove('hidden');
+                document.getElementById('accountSelector').classList.add('hidden');
+                return;
+            }
+            document.getElementById('accountSelector').classList.add('hidden');
+            document.getElementById('authContent').classList.remove('hidden');
+        };
+
+        window.showAccountSelector = function () {
+            const accounts = JSON.parse(localStorage.getItem('orbian_accounts')) || [];
+            const accountList = document.getElementById('accountList');
+            accountList.innerHTML = '';
+
+            accounts.forEach(acc => {
+                const item = document.createElement('div');
+                item.className = 'account-item';
+                const initial = acc.email.charAt(0).toUpperCase();
+
+                item.innerHTML = `
+                    <div class="account-avatar">${initial}</div>
+                    <div class="account-info">
+                        <div class="account-email">${acc.email}</div>
+                        <div class="account-name">${acc.username || 'Orbian User'}</div>
+                    </div>
+                `;
+                item.onclick = () => {
+                    localStorage.setItem('ai_assistant_user', JSON.stringify(acc));
+                    window.location.reload();
+                };
+                accountList.appendChild(item);
+            });
+
+            document.getElementById('authContent').classList.add('hidden');
+            document.getElementById('loginRequired').classList.add('hidden');
+            document.getElementById('accountSelector').classList.remove('hidden');
+        };
+
+        // State & Initialization
+        const urlParams = new URLSearchParams(window.location.search);
+        const clientId = urlParams.get('client_id');
+
+        function init() {
+            const user = JSON.parse(localStorage.getItem('ai_assistant_user'));
+            const accounts = JSON.parse(localStorage.getItem('orbian_accounts')) || [];
+
+            const authContent = document.getElementById('authContent');
+            const loginRequired = document.getElementById('loginRequired');
+
+            if (!user && accounts.length === 0) {
+                authContent.classList.add('hidden');
+                loginRequired.classList.remove('hidden');
+            } else if (!user && accounts.length > 0) {
+                authContent.classList.add('hidden');
+                window.showAccountSelector();
+            } else {
+                updateUI(user);
+            }
+        }
+
+        function updateUI(user) {
+            const displayName = clientId === 'orbian_internal_platform' ? 'Orbian Ecosystem' : (clientId ? clientId.substring(0, 12) + '...' : 'Unknown App');
+            document.getElementById('appName').textContent = displayName;
+            document.getElementById('appNameAlt').textContent = displayName;
+            document.getElementById('currentUserEmail').textContent = user.email;
+        }
+
+        async function authorize() {
+            const user = JSON.parse(localStorage.getItem('ai_assistant_user'));
+            if (!user || !clientId) return;
+
+            const btn = document.getElementById('allowBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loader"></div>';
+
+            try {
+                const res = await fetch(`${FLASK_URL}/api/orbian/authorize`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        client_id: clientId,
+                        user_id: user.id
+                    })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('authContent').classList.add('hidden');
+                    document.getElementById('redirectingState').classList.remove('hidden');
+
+                    setTimeout(() => {
+                        window.location.href = `${data.redirect_uri}?code=${data.code}`;
+                    }, 1200);
+                } else {
+                    alert(data.message || "Authorization failed");
+                    btn.disabled = false;
+                    btn.innerHTML = 'Grant Authorization';
+                }
+            } catch (e) {
+                alert("Network failure. Check backend connection.");
+                btn.disabled = false;
+                btn.innerHTML = 'Grant Authorization';
+            }
+        }
+
+        // Run
+        init();
+    </script>
+</body>
+
+</html>

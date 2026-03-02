@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Area Chart Test</title>
+    <link rel="icon" type="image/png" href="logo.png?v=6">
+    <link rel="apple-touch-icon" href="logo.png?v=6">
+    <!-- Dependencies used in Orbian AI -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --border: #edf2f7;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .test-container {
+            width: 90%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 10px;
+        }
+
+        #chart-test-root {
+            width: 100%;
+            height: 350px;
+            margin-top: 20px;
+        }
+
+        .info {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="test-container">
+        <h2>Orbian High-Fidelity Area Chart</h2>
+        <p class="info">Testing the premium Recharts implementation with smooth gradients and clean aesthetics.</p>
+        <div id="chart-test-root"></div>
+    </div>
+
+    <script>
+        // Simulated Orbian Chart Logic for testing
+        const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, defs, linearGradient, stop } = window.Recharts;
+        const { createElement } = window.React;
+
+        const data = [
+            { name: '2015', Biology: 90, Business: 110, Psychology: 105 },
+            { name: '2016', Biology: 105, Business: 108, Psychology: 130 },
+            { name: '2017', Biology: 120, Business: 115, Psychology: 115 },
+            { name: '2018', Biology: 130, Business: 140, Psychology: 95 },
+            { name: '2019', Biology: 110, Business: 145, Psychology: 85 },
+            { name: '2020', Biology: 140, Business: 100, Psychology: 95 },
+            { name: '2021', Biology: 110, Business: 125, Psychology: 125 },
+            { name: '2022', Biology: 145, Business: 130, Psychology: 145 },
+        ];
+
+        const colors = ['#3b82f6', '#93c5fd', '#1d4ed8'];
+
+        const ChartComponent = () => {
+            return createElement(ResponsiveContainer, { width: "100%", height: "100%" },
+                createElement(AreaChart, { data: data, margin: { top: 10, right: 10, left: -20, bottom: 0 } },
+                    createElement('defs', {}, [
+                        createElement('linearGradient', { id: "grad0", x1: "0", y1: "0", x2: "0", y2: "1", key: "g0" }, [
+                            createElement('stop', { offset: "0%", stopColor: colors[0], stopOpacity: 0.6 }),
+                            createElement('stop', { offset: "60%", stopColor: colors[0], stopOpacity: 0.2 }),
+                            createElement('stop', { offset: "100%", stopColor: colors[0], stopOpacity: 0.05 })
+                        ]),
+                        createElement('linearGradient', { id: "grad1", x1: "0", y1: "0", x2: "0", y2: "1", key: "g1" }, [
+                            createElement('stop', { offset: "0%", stopColor: colors[1], stopOpacity: 0.6 }),
+                            createElement('stop', { offset: "60%", stopColor: colors[1], stopOpacity: 0.2 }),
+                            createElement('stop', { offset: "100%", stopColor: colors[1], stopOpacity: 0.05 })
+                        ]),
+                        createElement('linearGradient', { id: "grad2", x1: "0", y1: "0", x2: "0", y2: "1", key: "g2" }, [
+                            createElement('stop', { offset: "0%", stopColor: colors[2], stopOpacity: 0.6 }),
+                            createElement('stop', { offset: "60%", stopColor: colors[2], stopOpacity: 0.2 }),
+                            createElement('stop', { offset: "100%", stopColor: colors[2], stopOpacity: 0.05 })
+                        ])
+                    ]),
+                    createElement(CartesianGrid, { strokeDasharray: "0", vertical: false, stroke: "#f1f5f9" }),
+                    createElement(XAxis, {
+                        dataKey: "name",
+                        axisLine: false,
+                        tickLine: false,
+                        tick: { fill: '#94a3b8', fontSize: 11 },
+                        dy: 10
+                    }),
+                    createElement(YAxis, {
+                        axisLine: false,
+                        tickLine: false,
+                        tick: { fill: '#94a3b8', fontSize: 11 }
+                    }),
+                    createElement(Tooltip, {
+                        contentStyle: { borderRadius: '12px', border: 'none', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }
+                    }),
+                    createElement(Legend, {
+                        verticalAlign: "top",
+                        align: "right",
+                        iconType: "circle",
+                        wrapperStyle: { paddingBottom: "20px", fontSize: '13px', fontWeight: '600' }
+                    }),
+                    createElement(Area, {
+                        type: "monotone",
+                        dataKey: "Biology",
+                        stroke: colors[0],
+                        strokeWidth: 4,
+                        fillOpacity: 1,
+                        fill: "url(#grad0)"
+                    }),
+                    createElement(Area, {
+                        type: "monotone",
+                        dataKey: "Business",
+                        stroke: colors[1],
+                        strokeWidth: 4,
+                        fillOpacity: 1,
+                        fill: "url(#grad1)"
+                    }),
+                    createElement(Area, {
+                        type: "monotone",
+                        dataKey: "Psychology",
+                        stroke: colors[2],
+                        strokeWidth: 4,
+                        fillOpacity: 1,
+                        fill: "url(#grad2)"
+                    })
+                )
+            );
+        };
+
+        const rootBase = document.getElementById('chart-test-root');
+        const reactRoot = ReactDOM.createRoot(rootBase);
+        reactRoot.render(createElement(ChartComponent));
+    </script>
+</body>
+
+</html>
