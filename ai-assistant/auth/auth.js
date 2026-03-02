@@ -271,17 +271,19 @@ window.onload = async function () {
             const setupOverlay = (id) => {
                 const container = document.getElementById(id);
                 if (container) {
+                    console.log(`Setting up Google Overlay for: ${id}`);
                     google.accounts.id.renderButton(container, {
                         type: 'standard',
                         shape: 'pill',
-                        theme: 'filled_blue', // Standard type, doesn't matter much as it's invisible
+                        theme: 'filled_blue',
                         size: 'large',
-                        width: 350 // Approximate width of the button
+                        width: container.offsetWidth || 350
                     });
 
                     const observer = new MutationObserver(() => {
                         const iframe = container.querySelector('iframe');
                         if (iframe) {
+                            console.log(`Iframe detected for ${id}, making invisible...`);
                             iframe.style.setProperty('position', 'absolute', 'important');
                             iframe.style.setProperty('top', '0', 'important');
                             iframe.style.setProperty('left', '0', 'important');
@@ -290,6 +292,7 @@ window.onload = async function () {
                             iframe.style.setProperty('min-width', '100%', 'important');
                             iframe.style.setProperty('opacity', '0', 'important');
                             iframe.style.setProperty('cursor', 'pointer', 'important');
+                            iframe.style.setProperty('z-index', '20', 'important');
                             observer.disconnect();
                         }
                     });
@@ -297,14 +300,18 @@ window.onload = async function () {
                 }
             };
 
-            setupOverlay('googleBtn');       // Login Form
-            setupOverlay('googleSignupBtn'); // Signup Form
+            setupOverlay('googleBtn');
+            setupOverlay('googleSignupBtn');
+            setupOverlay('googleBtnWrapper'); // For mobile
+            setupOverlay('googleSignupBtnWrapper'); // For mobile signup
 
             console.log("Google library initialized with overlays.");
         } else {
+            console.warn("Google library not found, retrying...");
             setTimeout(initGoogle, 500);
         }
     }
+    // Call immediately and also on load
     initGoogle();
 };
 
@@ -347,7 +354,12 @@ window.oauthLogin = async function (provider) {
         });
 
         // Force the Google picker to appear
-        google.accounts.id.prompt();
+        console.log("Forcing Google Prompt...");
+        google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed()) {
+                console.warn("Prompt not displayed:", notification.getNotDisplayedReason());
+            }
+        });
         return;
     }
 
