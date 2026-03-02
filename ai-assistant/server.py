@@ -444,13 +444,16 @@ class CORSProxyRequestHandler(http.server.SimpleHTTPRequestHandler):
             
             req = urllib.request.Request(target_url, data=body, method='POST')
             
-            # Forward relevant headers
-            for header in ['Authorization', 'Content-Type', 'x-goog-api-client', 'x-goog-api-key']:
-                if header in self.headers:
-                    req.add_header(header, self.headers[header])
+            # Forward relevant headers (case-insensitive mapping)
+            header_map = {k.lower(): k for k in self.headers}
+            for target_header in ['Authorization', 'Content-Type', 'x-goog-api-client', 'x-goog-api-key']:
+                if target_header.lower() in header_map:
+                    original_key = header_map[target_header.lower()]
+                    req.add_header(target_header, self.headers[original_key])
             
             # Add user agent
             req.add_header('User-Agent', 'Mozilla/5.0')
+            print(f"Proxying to {target_url} with headers: {req.headers}")
 
             with urllib.request.urlopen(req) as response:
                 self.send_response(response.status)

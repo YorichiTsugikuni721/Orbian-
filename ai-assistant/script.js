@@ -1621,13 +1621,21 @@ ${scoutIntelligence}
         });
 
         if (!response.ok) {
-            const err = await response.json();
-            console.error('❌ Gemini API Error Response:', err);
-            const msg = err.error?.message || '';
-            if (msg.toLowerCase().includes('leaked')) {
-                throw new Error('Your Gemini API key has been flagged as leaked by Google. Please generate a new key at aistudio.google.com and update it in Orbian Settings.');
+            let errorText = '';
+            try {
+                const err = await response.json();
+                console.error('❌ Gemini API Error Response:', err);
+                const msg = err.error?.message || '';
+                if (msg.toLowerCase().includes('leaked')) {
+                    throw new Error('Your Gemini API key has been flagged as leaked by Google. Please generate a new key at aistudio.google.com and update it in Orbian Settings.');
+                }
+                errorText = err.error?.message || 'Gemini API Error';
+            } catch (jsonErr) {
+                const rawText = await response.text();
+                console.error('❌ Gemini API Non-JSON Error:', rawText);
+                errorText = `Server Error: ${response.status} ${response.statusText}`;
             }
-            throw new Error(err.error?.message || 'Gemini API Error');
+            throw new Error(errorText);
         }
 
         const data = await response.json();
