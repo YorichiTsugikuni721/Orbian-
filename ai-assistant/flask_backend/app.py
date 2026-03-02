@@ -1252,8 +1252,11 @@ def admin_toggle_premium():
     status_text = "Activated" if new_status == 1 else "Deactivated"
     return jsonify({'success': True, 'message': f'Premium {status_text} for User ID {user_id}', 'new_status': new_status})
 
+# Ensure DB is initialized when deploying to production with Gunicorn
+init_db()
+
 if __name__ == '__main__':
-    init_db()
+    # init_db() # Moved out
     print("╔══════════════════════════════════════╗")
     print("║   Orbian AI — Flask Backend Server ║")
     print("║   http://localhost:5001               ║")
