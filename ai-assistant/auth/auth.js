@@ -275,31 +275,40 @@ window.onload = async function () {
                     console.log(`Setting up Google Overlay for: ${id}`);
                     
                     // We render a generic one, but hide it
-                    google.accounts.id.renderButton(container, {
-                        type: 'standard',
-                        shape: 'pill',
-                        theme: 'outline',
-                        size: 'large',
-                        width: container.parentElement?.offsetWidth || 350
-                    });
+                    // Small delay ensures parent width is calculated after render
+                    setTimeout(() => {
+                        const targetWidth = container.offsetWidth || 350;
+                        console.log(`Rendering Google Overlay with width: ${targetWidth}`);
+                        
+                        google.accounts.id.renderButton(container, {
+                            type: 'standard',
+                            shape: 'pill',
+                            theme: 'outline',
+                            size: 'large',
+                            width: targetWidth,
+                            text: 'continue_with',
+                            logo_alignment: 'left'
+                        });
 
-                    const observer = new MutationObserver(() => {
-                        const iframe = container.querySelector('iframe');
-                        if (iframe) {
-                            console.log(`Iframe detected for ${id}, making invisible overlay...`);
-                            iframe.style.setProperty('position', 'absolute', 'important');
-                            iframe.style.setProperty('top', '0', 'important');
-                            iframe.style.setProperty('left', '0', 'important');
-                            iframe.style.setProperty('width', '100%', 'important');
-                            iframe.style.setProperty('height', '100%', 'important');
-                            iframe.style.setProperty('min-width', '100%', 'important');
-                            iframe.style.setProperty('opacity', '0', 'important'); // Completely invisible
-                            iframe.style.setProperty('cursor', 'pointer', 'important');
-                            iframe.style.setProperty('z-index', '20', 'important');
-                            observer.disconnect();
-                        }
-                    });
-                    observer.observe(container, { childList: true });
+                        const observer = new MutationObserver(() => {
+                            const iframe = container.querySelector('iframe');
+                            if (iframe) {
+                                console.log(`Iframe detected for ${id}, making invisible overlay...`);
+                                iframe.style.setProperty('position', 'absolute', 'important');
+                                iframe.style.setProperty('top', '0', 'important');
+                                iframe.style.setProperty('left', '0', 'important');
+                                iframe.style.setProperty('width', '100%', 'important');
+                                iframe.style.setProperty('height', '100%', 'important');
+                                iframe.style.setProperty('min-width', '100%', 'important');
+                                iframe.style.setProperty('max-width', '100%', 'important');
+                                iframe.style.setProperty('opacity', '0', 'important'); // Completely invisible
+                                iframe.style.setProperty('cursor', 'pointer', 'important');
+                                iframe.style.setProperty('z-index', '20', 'important');
+                                observer.disconnect();
+                            }
+                        });
+                        observer.observe(container, { childList: true });
+                    }, 100);
                 }
             };
 
