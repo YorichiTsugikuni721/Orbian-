@@ -1105,14 +1105,7 @@ body.chat-active .input-container {
 }
 
 .model-badge {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    background: rgba(255,255,255,0.05);
-    padding: 4px 12px;
-    border-radius: 20px;
-    letter-spacing: 0.5px;
-    border: 1px solid rgba(255,255,255,0.05);
+    display: none; /* Removed as requested */
 }
 
 /* Ghost Code Input System */
@@ -1730,9 +1723,11 @@ body.chat-active .input-container {
     }
 
     .message.user {
-        justify-content: flex-end; /* Force stick to right */
+        justify-content: flex-end !important;
         flex-direction: row-reverse;
-        margin-left: auto; /* Additional push to right */
+        width: 100%;
+        margin-left: auto !important; /* Force it to the right */
+        align-self: flex-end;
     }
 
     .message-content {
@@ -1793,7 +1788,8 @@ body.chat-active .input-container {
     }
 
     body.chat-active #messageInput {
-        min-height: 32px; /* Even shorter after send */
+        min-height: 32px;
+        padding-top: 10px; /* Moves 'What do you want to know?' down */
     }
 
     .input-footer {
@@ -1807,7 +1803,7 @@ body.chat-active .input-container {
     #messageInput {
         font-size: 0.95rem;
         min-height: 24px;
-        padding: 4px 0;
+        padding: 18px 0 10px; /* Increased top padding to 18px to move text down */
         line-height: 1.4;
     }
 
@@ -1818,10 +1814,7 @@ body.chat-active .input-container {
         border-radius: 50%;
     }
 
-    .model-badge {
-        font-size: 0.7rem;
-        opacity: 0.6;
-    }
+    /* model-badge removed */
 
     .disclaimer {
         font-size: 0.6rem;
