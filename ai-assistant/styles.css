@@ -1636,31 +1636,31 @@ body.chat-active .input-container {
     .input-container {
         width: 100% !important;
         max-width: 100% !important;
-        padding: 12px 14px;
-        gap: 10px;
-        border-radius: 20px;
+        padding: 18px 16px; /* Increased padding for thicker bar */
+        gap: 12px;
+        border-radius: 24px;
         background: var(--bg-secondary);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body.chat-active .input-container {
-        padding: 6px 12px;
+        padding: 12px 16px; /* Still thick even when active */
         border-radius: 24px;
-        gap: 4px;
+        gap: 8px;
         background: #fff;
         border-color: rgba(124, 58, 237, 0.2);
     }
 
     #messageInput {
-        font-size: 0.98rem;
-        min-height: 44px; /* Restored to taller height */
-        padding: 12px 0 8px;
+        font-size: 1rem;
+        min-height: 54px; /* Much taller box */
+        padding: 16px 0 10px; /* Better vertical centering of placeholder */
         line-height: 1.5;
     }
 
     body.chat-active #messageInput {
-        min-height: 48px;
-        padding-top: 10px;
+        min-height: 54px;
+        padding-top: 14px;
     }
 
     .input-footer {
