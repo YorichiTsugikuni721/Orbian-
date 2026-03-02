@@ -722,7 +722,7 @@ body.sidebar-collapsed .sidebar>* {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 32px;
+    padding: 12px 32px; /* Thinned from 20px to 12px */
     background: rgba(10, 12, 20, 0.8);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -1650,11 +1650,12 @@ body.chat-active .input-container {
     }
 
     .chat-header {
-        padding: 14px 20px;
+        padding: 8px 16px; /* Thinned significantly for mobile */
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(25px);
         box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
-        height: 60px;
+        height: auto; /* Allow content to dictate height */
+        min-height: 48px;
         flex-shrink: 0;
     }
 
@@ -1728,8 +1729,9 @@ body.chat-active .input-container {
     }
 
     .message.user {
-        justify-content: flex-end;
+        justify-content: flex-end; /* Force stick to right */
         flex-direction: row-reverse;
+        margin-left: auto; /* Additional push to right */
     }
 
     .message-content {
@@ -1757,12 +1759,10 @@ body.chat-active .input-container {
         box-shadow: 0 20px 50px rgba(0,0,0,0.3);
     }
 
-    .input-area {
-        padding: 10px 12px calc(env(safe-area-inset-bottom, 12px) + 8px);
+    body.chat-active .input-area {
+        padding: 4px 12px 8px; /* High-density view */
         background: var(--bg-primary);
         border-top: 1px solid var(--border-color);
-        width: 100%;
-        transition: all 0.5s ease;
     }
 
     .input-container {
@@ -1777,6 +1777,22 @@ body.chat-active .input-container {
         box-shadow: none;
         display: flex;
         flex-direction: column;
+        transition: all 0.3s ease;
+    }
+
+    body.chat-active .input-container {
+        padding: 4px 10px; /* SHRUNK HEIGHT after interaction */
+        gap: 4px; /* Tight gaps */
+        border-radius: 24px;
+    }
+
+    body.chat-active .input-footer {
+        padding-top: 4px;
+        margin-top: 2px;
+    }
+
+    body.chat-active #messageInput {
+        min-height: 32px; /* Even shorter after send */
     }
 
     .input-footer {
