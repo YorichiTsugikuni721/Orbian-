@@ -264,6 +264,7 @@ window.onload = async function () {
                 client_id: GOOGLE_CLIENT_ID,
                 callback: window.handleCredentialResponse,
                 ux_mode: 'popup',
+                auto_select: false,
                 itp_support: true
             });
 
@@ -317,6 +318,7 @@ window.onload = async function () {
 
 window.handleCredentialResponse = async function (response) {
     console.log("Google Credential Received:", response);
+    window.googlePrompting = false;
     showToast('Google identity verified! Syncing...', 'success');
 
     try {
@@ -342,22 +344,22 @@ window.handleCredentialResponse = async function (response) {
 window.oauthLogin = async function (provider) {
     if (provider === 'google') {
         if (typeof google === 'undefined') {
-            showToast('Google Library not loaded. Check internet connection.');
+            showToast('Google Library not loaded.');
             return;
         }
 
-        // Re-initialize to ensure state is clean
-        google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: window.handleCredentialResponse,
-            ux_mode: 'popup'
-        });
+        if (window.googlePrompting) {
+            console.log("Google prompt already outstanding, ignoring click.");
+            return;
+        }
 
-        // Force the Google picker to appear
+        window.googlePrompting = true;
         console.log("Forcing Google Prompt...");
+
         google.accounts.id.prompt((notification) => {
-            if (notification.isNotDisplayed()) {
-                console.warn("Prompt not displayed:", notification.getNotDisplayedReason());
+            if (notification.isNotDisplayed() || notification.isSkippedMomentarily() || notification.isDismissedMomentarily()) {
+                console.warn("Prompt issue:", notification.getNotDisplayedReason() || "Skipped/Dismissed");
+                window.googlePrompting = false;
             }
         });
         return;
@@ -439,16 +441,17 @@ async function handleAuth(event, endpoint, buttonId, loaderId) {
     const formData = new FormData(event.target);
     const body = Object.fromEntries(formData.entries());
 
-    if (Object.keys(body).length === 0) {
-        if (endpoint === '/api/login') {
-            body.email = document.getElementById('loginEmail').value;
-            body.password = document.getElementById('loginPassword').value;
-        } else {
-            body.username = document.getElementById('signupUsername').value;
-            body.email = document.getElementById('signupEmail').value;
-            body.password = document.getElementById('signupPassword').value;
-        }
+    // Fallback: Ensure fields are captured if FormData is empty or missing keys
+    if (endpoint === '/api/signup') {
+        body.username = body.username || document.getElementById('signupUsername')?.value || '';
+        body.email = body.email || document.getElementById('signupEmail')?.value || '';
+        body.password = body.password || document.getElementById('signupPassword')?.value || '';
+    } else if (endpoint === '/api/login') {
+        body.email = body.email || document.getElementById('loginEmail')?.value || '';
+        body.password = body.password || document.getElementById('loginPassword')?.value || '';
     }
+
+    console.log("🚀 Sending Auth Request to:", endpoint, "Body (Final):", body);
 
     try {
         const res = await fetch(`${FLASK_URL}${endpoint}`, {
@@ -482,9 +485,11 @@ async function handleAuth(event, endpoint, buttonId, loaderId) {
                 }
             }, 1000);
         } else {
+            console.error("Auth Error details:", data);
             showToast(data.message || 'Error occurred');
         }
     } catch (e) {
+        console.error("Auth Connection Error:", e);
         showToast('Server error. check Flask backend.');
     } finally {
         if (btn) btn.disabled = false;
