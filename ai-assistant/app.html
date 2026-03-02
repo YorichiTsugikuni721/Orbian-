@@ -590,6 +590,60 @@
                     </div>
                 </div>
 
+                <!-- App Permissions Management (NEW) -->
+                <div class="setting-section">
+                    <h4>Permissions Management</h4>
+                    <p style="font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-bottom: 15px;">Manage hardware and location access for Orbian AI Services.</p>
+
+                    <div class="permission-item" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="background: rgba(52, 211, 153, 0.1); padding: 8px; border-radius: 10px; border: 1px solid rgba(52, 211, 153, 0.2);">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.85rem; font-weight: 600;">Location Services</div>
+                                <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5);">Weather, localized news & Bihar/Buxar context.</div>
+                            </div>
+                        </div>
+                        <label class="switch-premium">
+                            <input type="checkbox" id="permLoc" checked>
+                            <span class="slider-premium"></span>
+                        </label>
+                    </div>
+
+                    <div class="permission-item" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="background: rgba(124, 58, 237, 0.1); padding: 8px; border-radius: 10px; border: 1px solid rgba(124, 58, 237, 0.2);">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.85rem; font-weight: 600;">Microphone Access</div>
+                                <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5);">Hands-free live conversation with Orbian.</div>
+                            </div>
+                        </div>
+                        <label class="switch-premium">
+                            <input type="checkbox" id="permMic" checked>
+                            <span class="slider-premium"></span>
+                        </label>
+                    </div>
+
+                    <div class="permission-item" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="background: rgba(244, 114, 182, 0.1); padding: 8px; border-radius: 10px; border: 1px solid rgba(244, 114, 182, 0.2);">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.85rem; font-weight: 600;">Camera & Vision</div>
+                                <div style="font-size: 0.7rem; color: rgba(255,255,255,0.5);">Real-time object & environment analysis.</div>
+                            </div>
+                        </div>
+                        <label class="switch-premium">
+                            <input type="checkbox" id="permCam" checked>
+                            <span class="slider-premium"></span>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="setting-group">
                     <label for="systemPromptInput">System Prompt</label>
                     <textarea id="systemPromptInput" rows="3"

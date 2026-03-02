@@ -3229,3 +3229,57 @@ body.ghost-mode .suggestion-btn {
     color: rgba(255, 255, 255, .28);
     letter-spacing: .3px;
 }
+
+/* 📱 PREMIUM SWITCH UI (iOS/ANDROID TREND) */
+.switch-premium {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.switch-premium input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-premium {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: .4s;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.slider-premium:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider-premium {
+    background-color: #7c3aed;
+    border-color: #8b5cf6;
+}
+
+input:focus + .slider-premium {
+    box-shadow: 0 0 1px #7c3aed;
+}
+
+input:checked + .slider-premium:before {
+    transform: translateX(18px);
+}

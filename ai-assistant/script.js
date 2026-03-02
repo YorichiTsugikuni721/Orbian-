@@ -115,6 +115,8 @@ You represent the pinnacle of digital intelligence—combining the speed of ligh
             visionType: null, // 'camera' or 'screen'
             liveStream: null,
 
+            permissions: { location: true, mic: true, cam: true },
+
             systemPrompt: `You are a helpful, intelligent, and friendly AI Assistant.
 Your goal is to provide clear, concise, and highly useful answers to the user.
 
@@ -657,6 +659,28 @@ Be thorough, expert-level, and analytical. This is DEEP RESEARCH, not a casual a
         if (this.perplexityKeyInput) this.perplexityKeyInput.value = this.settings.perplexityKey || '';
         if (this.serperKeyInput) this.serperKeyInput.value = this.settings.serperKey || '';
         if (this.systemPromptInput) this.systemPromptInput.value = this.settings.systemPrompt || '';
+
+        // --- Populate Permission Toggles (NEW) ---
+        const pLoc = document.getElementById('permLoc');
+        const pMic = document.getElementById('permMic');
+        const pCam = document.getElementById('permCam');
+        if (pLoc) pLoc.checked = this.settings.permissions?.location !== false;
+        if (pMic) pMic.checked = this.settings.permissions?.mic !== false;
+        if (pCam) pCam.checked = this.settings.permissions?.cam !== false;
+
+        // Add immediate triggers for permission toggles
+        if (pLoc && !pLoc.dataset.bound) {
+            pLoc.dataset.bound = "true";
+            pLoc.addEventListener('change', () => { if (pLoc.checked) this.initGeolocation(); });
+        }
+        if (pMic && !pMic.dataset.bound) {
+            pMic.dataset.bound = "true";
+            pMic.addEventListener('change', () => { if (pMic.checked) this.ensureMediaPermissions(); });
+        }
+        if (pCam && !pCam.dataset.bound) {
+            pCam.dataset.bound = "true";
+            pCam.addEventListener('change', () => { if (pCam.checked) this.ensureMediaPermissions(); });
+        }
     }
 
     saveSettings() {
@@ -671,7 +695,12 @@ Be thorough, expert-level, and analytical. This is DEEP RESEARCH, not a casual a
             perplexityKey: this.perplexityKeyInput?.value.trim(),
             perplexityModel: this.settings.perplexityModel || 'sonar',
             serperKey: this.serperKeyInput?.value.trim(),
-            systemPrompt: this.systemPromptInput?.value.trim()
+            systemPrompt: this.systemPromptInput?.value.trim(),
+            permissions: {
+                location: document.getElementById('permLoc')?.checked ?? true,
+                mic: document.getElementById('permMic')?.checked ?? true,
+                cam: document.getElementById('permCam')?.checked ?? true
+            }
         };
 
         localStorage.setItem('aiAssistantSettings', JSON.stringify(this.settings));
@@ -3897,16 +3926,22 @@ ${scoutIntelligence}
 
         this.showToast("🔓 Requesting Camera & Microphone Access...");
         try {
-            // Priority: Request BOTH to get it over with
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                audio: true, 
-                video: { width: 320, height: 240 } // Small request just to probe
-            });
+            const constraints = { 
+                audio: this.settings.permissions.mic, 
+                video: this.settings.permissions.cam ? { width: 320, height: 240 } : false 
+            };
+
+            if (!constraints.audio && !constraints.video) {
+                this.showToast("⚠️ Both Mic and Camera disabled in app settings.");
+                return false;
+            }
+
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
             
             // Immediately stop tracks to release hardware
             stream.getTracks().forEach(track => track.stop());
             this.permissionsGranted = true;
-            console.log("✅ All hardware permissions granted.");
+            console.log("✅ Requested hardware permissions granted.");
             return true;
         } catch (e) {
             console.error("❌ Hardware Permission Denied:", e);
@@ -4088,8 +4123,13 @@ ${scoutIntelligence}
     }
     // --- Geolocation & Local Intelligence (Weather/News/Bihar/Buxar) ---
     async initGeolocation() {
+        if (!this.settings.permissions?.location) {
+            console.log("📍 Geolocation disabled in app settings.");
+            return;
+        }
+
         if (!navigator.geolocation) {
-            console.warn("📍 Geolocation not supported.");
+            console.warn("📍 Geolocation not supported by browser.");
             return;
         }
 
