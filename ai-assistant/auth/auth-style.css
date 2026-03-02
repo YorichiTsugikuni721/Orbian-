@@ -260,6 +260,7 @@ body {
     height: 100%;
     z-index: 10;
     opacity: 0;
+    cursor: pointer;
 }
 
 .google-overlay iframe {
