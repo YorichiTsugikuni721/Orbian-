@@ -316,7 +316,12 @@ window.onload = async function () {
 window.handleCredentialResponse = async function (response) {
     console.log("🚀 Google Credential Received:", response);
     window.googlePrompting = false;
-    showToast('Google identity verified! Syncing...', 'success');
+    
+    // Show loading state
+    const loader = document.getElementById('loginLoader') || document.getElementById('signupLoader');
+    if (loader) loader.classList.remove('hidden');
+    
+    showToast('Verifying with Google... Please wait', 'success');
 
     console.log("🔗 Syncing with Backend:", `${FLASK_URL}/api/oauth/google`);
 
@@ -332,17 +337,18 @@ window.handleCredentialResponse = async function (response) {
         console.log("📦 Backend Data:", data);
 
         if (data.success) {
-            showToast('Google login successful!', 'success');
+            showToast('Login successful! Redirecting...', 'success');
             localStorage.setItem('ai_assistant_user', JSON.stringify(data.user));
-            console.log("✅ User stored, redirecting...");
             setTimeout(() => window.location.href = '../app', 1000);
         } else {
+            if (loader) loader.classList.add('hidden');
             console.error("❌ Sync Failed:", data.message);
             showToast(data.message || 'Google sync failed');
         }
     } catch (e) {
+        if (loader) loader.classList.add('hidden');
         console.error("🚨 Fetch Error:", e);
-        showToast('Connection to backend failed during Google sync.');
+        showToast('Connection error. Check your internet.');
     }
 }
 
