@@ -1623,17 +1623,23 @@ ${scoutIntelligence}
         if (!response.ok) {
             let errorText = '';
             try {
-                const err = await response.json();
-                console.error('❌ Gemini API Error Response:', err);
-                const msg = err.error?.message || '';
-                if (msg.toLowerCase().includes('leaked')) {
-                    throw new Error('Your Gemini API key has been flagged as leaked by Google. Please generate a new key at aistudio.google.com and update it in Orbian Settings.');
-                }
-                errorText = err.error?.message || 'Gemini API Error';
-            } catch (jsonErr) {
                 const rawText = await response.text();
-                console.error('❌ Gemini API Non-JSON Error:', rawText);
-                errorText = `Server Error: ${response.status} ${response.statusText}`;
+                try {
+                    const err = JSON.parse(rawText);
+                    console.error('❌ Gemini API Error Response:', err);
+                    const msg = err.error?.message || '';
+                    if (msg.toLowerCase().includes('leaked')) {
+                        throw new Error('Your Gemini API key has been flagged as leaked by Google. Please generate a new key at aistudio.google.com and update it in Orbian Settings.');
+                    }
+                    errorText = err.error?.message || 'Gemini API Error';
+                } catch (jsonErr) {
+                    if (errorText === '') {
+                        console.error('❌ Gemini API Non-JSON Error:', rawText);
+                        errorText = `Server Error: ${response.status} ${response.statusText}`;
+                    }
+                }
+            } catch(e) {
+                 errorText = errorText || 'Failed to read response body.';
             }
             throw new Error(errorText);
         }
@@ -1720,8 +1726,20 @@ ${scoutIntelligence}
         });
 
         if (!response.ok) {
-            const err = await response.json();
-            throw new Error(err.error?.message || 'API Error');
+            let errorText = '';
+            try {
+                const rawText = await response.text();
+                try {
+                    const err = JSON.parse(rawText);
+                    errorText = err.error?.message || 'API Error';
+                } catch (e) {
+                    console.error('❌ API Non-JSON Error:', rawText);
+                    errorText = `Server Error: ${response.status} ${response.statusText}`;
+                }
+            } catch (e) {
+                errorText = 'Failed to read response.';
+            }
+            throw new Error(errorText);
         }
 
         const data = await response.json();
