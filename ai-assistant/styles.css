@@ -1654,14 +1654,29 @@ body.sidebar-collapsed .sidebar>* {
         width: 100%;
         padding-bottom: 30px;
         gap: 16px;
+        margin: 0 !important; /* Force no auto-margin */
+        display: flex;
+        flex-direction: column;
     }
 
     .message {
-        max-width: 90%;
-        margin-bottom: 4px;
+        width: 100%; /* Ensure container spans full width */
+        max-width: 100%; 
+        margin-bottom: 8px;
+        display: flex;
+    }
+
+    .message.assistant {
+        justify-content: flex-start;
+    }
+
+    .message.user {
+        justify-content: flex-end;
+        flex-direction: row-reverse;
     }
 
     .message-content {
+        max-width: 85%; /* Don't take full 100% to keep conversation feel */
         font-size: 0.88rem;
         padding: 12px 14px;
         border-radius: 18px;
@@ -1669,18 +1684,21 @@ body.sidebar-collapsed .sidebar>* {
     }
 
     .input-area {
-        padding: 12px 16px calc(env(safe-area-inset-bottom, 20px) + 10px);
-        background: #fff;
-        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 10px 12px calc(env(safe-area-inset-bottom, 12px) + 8px);
+        background: var(--bg-primary);
+        border-top: 1px solid var(--border-color);
+        width: 100%;
     }
 
     .input-container {
-        width: 100%;
-        padding: 2px 4px 2px 12px;
-        gap: 4px;
-        border-radius: 24px;
-        background: #f8fafc;
-        border: 1px solid rgba(0, 0, 0, 0.05);
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 4px 8px 4px 14px;
+        gap: 6px;
+        border-radius: 20px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
         box-shadow: none;
     }
 
