@@ -943,9 +943,8 @@ body.sidebar-collapsed .sidebar>* {
 
 .message.user {
     flex-direction: row-reverse;
-    justify-content: flex-end;
+    justify-content: flex-start; /* Align RIGHT when row-reverse is used */
     width: 100%;
-    margin-left: auto;
 }
 
 
@@ -1067,7 +1066,7 @@ body.chat-active .input-area {
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: 24px;
-    padding: 16px;
+    padding: 24px; /* Increased from 16px for better desktop feel */
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -1078,8 +1077,8 @@ body.chat-active .input-area {
 
 body.chat-active .input-container {
     max-width: 1000px;
-    padding: 10px 16px;
-    border-radius: 16px;
+    padding: 20px 24px; /* Much thicker active bar */
+    border-radius: 20px;
     box-shadow: var(--shadow-sm);
 }
 
@@ -1125,11 +1124,11 @@ body.chat-active .input-container {
     border: none;
     outline: none;
     color: var(--text-primary);
-    padding: 10px 4px;
-    font-size: 1rem;
+    padding: 12px 6px;
+    font-size: 1.1rem;
     resize: none;
-    min-height: 44px;
-    max-height: 180px;
+    min-height: 56px; /* Massive default height */
+    max-height: 250px;
     font-family: inherit;
     line-height: 1.5;
     white-space: pre-wrap;
@@ -1572,11 +1571,9 @@ body.chat-active .input-container {
 
     /* Message Alignment Fixes */
     .message.user {
-        justify-content: flex-end !important;
+        justify-content: flex-start !important; /* Aligns to RIGHT with row-reverse */
         flex-direction: row-reverse;
-        margin-left: auto !important;
         width: 100%;
-        align-self: flex-end;
     }
     
     .message.assistant {
