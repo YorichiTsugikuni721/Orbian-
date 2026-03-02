@@ -234,7 +234,20 @@
                     </button>
                     <h1>AI Assistant</h1>
                 </div>
-                <!-- Actions removed -->
+                <div class="header-actions">
+                    <!-- Live Conversation Button (Moved from bottom) -->
+                    <button class="icon-btn" id="voiceModeBtn" title="Orbian Live Conversation" style="width: auto; padding: 0 12px; gap: 8px; font-size: 0.8rem; font-weight: 600; color: #7c3aed; border-color: rgba(124, 58, 237, 0.2); background: rgba(124, 58, 237, 0.05); border-radius: 20px;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 10v4" />
+                            <path d="M8 6v12" />
+                            <path d="M13 4v16" />
+                            <path d="M18 8v8" />
+                            <path d="M23 11v2" />
+                        </svg>
+                        <span>Live Convo</span>
+                    </button>
+                </div>
             </header>
 
             <!-- Focus Timer Overlay -->
@@ -318,47 +331,46 @@
                     <input type="file" id="fileInput" accept="image/*,.txt,.js,.py,.html,.css,.json,.md,.csv"
                         class="hidden">
 
-                    <!-- Paperclip Button -->
-                    <button class="icon-btn" id="attachBtn" title="Attach Image/File">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path
-                                d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48">
-                            </path>
-                        </svg>
-                    </button>
-
-                    <div class="input-wrapper">
-                        <textarea id="ghostInput" readonly disabled></textarea>
-                        <textarea id="messageInput" placeholder="Type your message..." rows="1" autofocus></textarea>
+                    <div class="input-main">
+                        <div class="input-wrapper">
+                            <textarea id="ghostInput" readonly disabled></textarea>
+                            <textarea id="messageInput" placeholder="What do you want to know?" rows="1" autofocus></textarea>
+                        </div>
                     </div>
-                    <button class="send-btn" id="voiceModeBtn" style="margin-right: 8px;"
-                        title="Orbian Live Conversation">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 10v4" />
-                            <path d="M8 6v12" />
-                            <path d="M13 4v16" />
-                            <path d="M18 8v8" />
-                            <path d="M23 11v2" />
-                        </svg>
-                    </button>
-                    <button class="send-btn" id="micBtn" style="margin-right: 8px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                            <line x1="12" y1="19" x2="12" y2="23"></line>
-                            <line x1="8" y1="23" x2="16" y2="23"></line>
-                        </svg>
-                    </button>
-                    <button class="send-btn" id="sendBtn" disabled>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                        </svg>
-                    </button>
+
+                    <div class="input-footer">
+                        <div class="footer-left">
+                            <button class="icon-btn" id="attachBtn" title="Attach Image/File">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="footer-center">
+                            <div class="model-badge" title="Active Intelligence Unit">
+                                🛸 Orbian v2
+                            </div>
+                        </div>
+                        <div class="footer-right">
+                            <button class="icon-btn" id="micBtn" title="Voice Input">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                                </svg>
+                            </button>
+                            <button class="send-btn" id="sendBtn" disabled>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <p class="disclaimer">AI Assistant may produce inaccurate information. Consider verifying important
                     details.</p>

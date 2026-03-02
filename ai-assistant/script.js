@@ -854,6 +854,7 @@ Be thorough, expert-level, and analytical. This is DEEP RESEARCH, not a casual a
         }
 
         this.welcomeScreen.classList.add('hidden');
+        document.body.classList.add('chat-active');
         this.messageInput.value = '';
         this.sendBtn.disabled = true;
         this.autoResizeTextarea();
@@ -2905,6 +2906,7 @@ ${scoutIntelligence}
         this.messages = [];
         this.messagesContainer.innerHTML = '';
         this.welcomeScreen.classList.remove('hidden');
+        document.body.classList.remove('chat-active');
         this.messageInput.value = '';
         this.sendBtn.disabled = true;
         this.addHistoryItem('New conversation', this.currentChatId, true);
@@ -3025,6 +3027,7 @@ ${scoutIntelligence}
         // Clear screen and render all messages
         this.messagesContainer.innerHTML = '';
         this.welcomeScreen.classList.add('hidden');
+        document.body.classList.add('chat-active');
 
         chat.messages.forEach(msg => {
             this.renderMessage(msg);
